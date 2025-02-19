@@ -1,18 +1,13 @@
 import { PrismaClient } from '@prisma/client';
 import { NextResponse, NextRequest } from 'next/server';
-import type { ParsedUrlQuery } from 'querystring';
 
 const prisma = new PrismaClient();
 
-interface BotParams extends ParsedUrlQuery {
-  botId: string;
-}
-
 export async function GET(
   request: NextRequest,
-  context: { params: BotParams; searchParams?: never }
+  context: any
 ) {
-  const { botId } = context.params;
+  const { botId } = context.params as { botId: string };
 
   try {
     const bot = await prisma.bot.findUnique({
