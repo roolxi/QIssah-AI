@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 
 export async function GET(
   request: Request,
-  { params }: { params: { botId: string } } // ✅ Corrected this type definition
+  { params }: { params: { botId: string } }
 ) {
   const { botId } = params;
 
@@ -17,16 +17,13 @@ export async function GET(
     });
 
     if (!bot) {
-      return NextResponse.json({ error: "Bot not found" }, { status: 404 });
+      return new NextResponse(JSON.stringify({ error: "Bot not found" }), { status: 404 });
     }
 
-    return NextResponse.json(bot);
+    return new NextResponse(JSON.stringify(bot));
   } catch (error) {
     console.error("Error fetching bot by ID:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch bot" },
-      { status: 500 }
-    );
+    return new NextResponse(JSON.stringify({ error: "Failed to fetch bot" }), { status: 500 });
   } finally {
     await prisma.$disconnect();
   }
