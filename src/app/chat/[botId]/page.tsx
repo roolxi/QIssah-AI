@@ -18,12 +18,14 @@ export default function ChatBotIdPage() {
   const [bot, setBot] = useState<Bot | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [messages, setMessages] = useState<{ sender: "user" | "bot"; text: string }[]>([]);
+  const [messages, setMessages] = useState<
+    { sender: "user" | "bot"; text: string }[]
+  >([]);
   const [newMessage, setNewMessage] = useState("");
   const [darkMode, setDarkMode] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // Fetch bot details from /api/bots/[botId]
+  // جلب تفاصيل البوت من /api/bots/[botId]
   useEffect(() => {
     const fetchBot = async () => {
       try {
@@ -42,7 +44,7 @@ export default function ChatBotIdPage() {
     fetchBot();
   }, [botId]);
 
-  // Handle sending a message to /api/chat
+  // التعامل مع إرسال الرسالة إلى /api/chat
   const handleSendMessage = async () => {
     if (!newMessage.trim()) return;
     const userMsg = { sender: "user" as const, text: newMessage };
@@ -81,15 +83,27 @@ export default function ChatBotIdPage() {
   }
 
   return (
-    <div className={`min-h-screen w-full transition-colors duration-500 ${darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"}`}>
-      <Header darkMode={darkMode} toggleTheme={() => setDarkMode(!darkMode)} setMenuOpen={setMenuOpen} />
+    <div
+      className={`min-h-screen w-full transition-colors duration-500 ${
+        darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"
+      }`}
+    >
+      <Header
+        darkMode={darkMode}
+        toggleTheme={() => setDarkMode(!darkMode)}
+        setMenuOpen={setMenuOpen}
+      />
       <MobileMenu darkMode={darkMode} menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
 
       <main className="max-w-3xl mx-auto px-4 py-8">
         <h1 className="text-2xl font-bold mb-4">{bot.name}</h1>
         <p className="mb-6">{bot.description}</p>
 
-        <div className={`rounded-lg p-4 mb-4 ${darkMode ? "bg-gray-800" : "bg-gray-200"} h-[400px] overflow-y-auto flex flex-col`}>
+        <div
+          className={`rounded-lg p-4 mb-4 ${
+            darkMode ? "bg-gray-800" : "bg-gray-200"
+          } h-[400px] overflow-y-auto flex flex-col`}
+        >
           {messages.map((message, index) => (
             <div
               key={index}

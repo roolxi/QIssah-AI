@@ -8,10 +8,14 @@ interface MobileMenuProps {
   setMenuOpen: (open: boolean) => void;
 }
 
-export default function MobileMenu({ darkMode, menuOpen, setMenuOpen }: MobileMenuProps) {
+export default function MobileMenu({
+  darkMode,
+  menuOpen,
+  setMenuOpen,
+}: MobileMenuProps) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  // Checks 'document.cookie' to see if 'token=' is present
+  // فحص document.cookie للتأكد من وجود "token="
   useEffect(() => {
     const hasToken = document.cookie.includes("token=");
     setIsLoggedIn(hasToken);
@@ -33,14 +37,21 @@ export default function MobileMenu({ darkMode, menuOpen, setMenuOpen }: MobileMe
           viewBox="0 0 24 24"
           stroke="currentColor"
         >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M6 18L18 6M6 6l12 12"
+          />
         </svg>
       </button>
 
       <Link
         href="/"
         onClick={() => setMenuOpen(false)}
-        className={`mb-3 text-lg hover:text-red-600 ${darkMode ? "text-white" : "text-gray-900"}`}
+        className={`mb-3 text-lg hover:text-red-600 ${
+          darkMode ? "text-white" : "text-gray-900"
+        }`}
       >
         الرئيسية
       </Link>
@@ -48,7 +59,9 @@ export default function MobileMenu({ darkMode, menuOpen, setMenuOpen }: MobileMe
       <Link
         href="/catalog"
         onClick={() => setMenuOpen(false)}
-        className={`mb-3 text-lg hover:text-red-600 ${darkMode ? "text-white" : "text-gray-900"}`}
+        className={`mb-3 text-lg hover:text-red-600 ${
+          darkMode ? "text-white" : "text-gray-900"
+        }`}
       >
         الأقسام (الكتالوج)
       </Link>
@@ -57,7 +70,9 @@ export default function MobileMenu({ darkMode, menuOpen, setMenuOpen }: MobileMe
         <Link
           href="/create-bot"
           onClick={() => setMenuOpen(false)}
-          className={`mb-3 text-lg hover:text-red-600 ${darkMode ? "text-white" : "text-gray-900"}`}
+          className={`mb-3 text-lg hover:text-red-600 ${
+            darkMode ? "text-white" : "text-gray-900"
+          }`}
         >
           اصنع البوت الخاص فيك !
         </Link>
@@ -67,14 +82,18 @@ export default function MobileMenu({ darkMode, menuOpen, setMenuOpen }: MobileMe
         <Link
           href="/help"
           onClick={() => setMenuOpen(false)}
-          className={`block text-lg mt-3 hover:text-red-600 ${darkMode ? "text-white" : "text-gray-900"}`}
+          className={`block text-lg mt-3 hover:text-red-600 ${
+            darkMode ? "text-white" : "text-gray-900"
+          }`}
         >
           المساعدة
         </Link>
         <Link
           href="/contact"
           onClick={() => setMenuOpen(false)}
-          className={`block text-lg mt-3 hover:text-red-600 ${darkMode ? "text-white" : "text-gray-900"}`}
+          className={`block text-lg mt-3 hover:text-red-600 ${
+            darkMode ? "text-white" : "text-gray-900"
+          }`}
         >
           تواصل معنا
         </Link>
