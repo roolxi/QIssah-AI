@@ -5,12 +5,9 @@ const prisma = new PrismaClient();
 
 export async function GET(
   request: NextRequest,
-  { params, searchParams: _searchParams }: {
-    params: { botId: string };
-    searchParams: { [key: string]: string | string[] | undefined };
-  }
+  context: { params: { botId: string }; searchParams: { [key: string]: string | string[] | undefined } }
 ) {
-  const { botId } = params;
+  const { botId } = context.params;
 
   try {
     const bot = await prisma.bot.findUnique({
