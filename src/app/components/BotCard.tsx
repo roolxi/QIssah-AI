@@ -1,20 +1,24 @@
 "use client";
 import { motion } from "framer-motion";
-import Link from "next/link";
-import Image from "next/image"; // ✅ Import Next.js Image
+import Image from "next/image";
 
-export default function BotCard({
-  bot,
-  darkMode
-}: {
+interface BotCardProps {
   bot: {
-    id: string; // Ensure bot object has 'id' property
+    id: string;
     name: string;
     description: string;
     image: string;
   };
   darkMode: boolean;
-}) {
+  handleStartStory: (bot: {
+    id: string;
+    name: string;
+    description: string;
+    image: string;
+  }) => void;
+}
+
+export default function BotCard({ bot, darkMode, handleStartStory }: BotCardProps) {
   return (
     <motion.div
       className={`rounded-xl shadow-lg hover:shadow-2xl transition-shadow overflow-hidden ${
@@ -25,7 +29,6 @@ export default function BotCard({
       viewport={{ once: true }}
       transition={{ duration: 0.5 }}
     >
-      {/* ✅ Use Next.js Image for optimization */}
       <Image 
         src={bot.image} 
         alt={bot.name} 
@@ -36,17 +39,16 @@ export default function BotCard({
       <div className="p-4">
         <h3 className="text-xl font-bold mb-3 text-red-500">{bot.name}</h3>
         <p className="text-sm leading-relaxed mb-4 opacity-90">{bot.description}</p>
-        <Link href={`/chat/${bot.id}`} className="w-full">
-          <button
-            className={`w-full py-2 rounded-lg font-medium transition-all ${
-              darkMode
-                ? "bg-red-700 hover:bg-red-600 text-white"
-                : "bg-red-500 hover:bg-red-600 text-white"
-            }`}
-          >
-            ابدأ الرحلة ➔
-          </button>
-        </Link>
+        <button
+          onClick={() => handleStartStory(bot)}
+          className={`w-full py-2 rounded-lg font-medium transition-all ${
+            darkMode
+              ? "bg-red-700 hover:bg-red-600 text-white"
+              : "bg-red-500 hover:bg-red-600 text-white"
+          }`}
+        >
+          ابدأ الرحلة ➔
+        </button>
       </div>
     </motion.div>
   );
