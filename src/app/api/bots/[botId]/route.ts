@@ -5,9 +5,9 @@ const prisma = new PrismaClient();
 
 export async function GET(
   request: NextRequest,
-  { params, searchParams }: { 
-    params: { botId: string }; 
-    searchParams: { [key: string]: string | string[] | undefined } 
+  { params, searchParams: _searchParams }: {
+    params: { botId: string };
+    searchParams: { [key: string]: string | string[] | undefined };
   }
 ) {
   const { botId } = params;
