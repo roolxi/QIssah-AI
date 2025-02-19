@@ -1,16 +1,18 @@
 import { PrismaClient } from '@prisma/client';
 import { NextResponse, NextRequest } from 'next/server';
+import type { ParsedUrlQuery } from 'querystring';
 
 const prisma = new PrismaClient();
 
+interface BotParams extends ParsedUrlQuery {
+  botId: string;
+}
+
 export async function GET(
   request: NextRequest,
-  { params, searchParams }: { params: { botId: string }; searchParams: URLSearchParams }
+  context: { params: BotParams; searchParams?: never }
 ) {
-  // لتجنب تحذير ESLint حول المتغير غير المستخدم
-  void searchParams;
-
-  const { botId } = params;
+  const { botId } = context.params;
 
   try {
     const bot = await prisma.bot.findUnique({
