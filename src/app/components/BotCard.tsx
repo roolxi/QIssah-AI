@@ -1,11 +1,11 @@
 "use client";
 import { motion } from "framer-motion";
-import Link from 'next/link';
+import Link from "next/link";
+import Image from "next/image"; // ✅ Import Next.js Image
 
 export default function BotCard({
   bot,
-  darkMode,
-  handleStartStory
+  darkMode
 }: {
   bot: {
     id: string; // Ensure bot object has 'id' property
@@ -14,7 +14,6 @@ export default function BotCard({
     image: string;
   };
   darkMode: boolean;
-  handleStartStory: (bot: any) => void;
 }) {
   return (
     <motion.div
@@ -26,11 +25,18 @@ export default function BotCard({
       viewport={{ once: true }}
       transition={{ duration: 0.5 }}
     >
-      <img src={bot.image} alt={bot.name} className="w-full h-40 object-cover" />
+      {/* ✅ Use Next.js Image for optimization */}
+      <Image 
+        src={bot.image} 
+        alt={bot.name} 
+        width={500} 
+        height={160} 
+        className="w-full h-40 object-cover"
+      />
       <div className="p-4">
         <h3 className="text-xl font-bold mb-3 text-red-500">{bot.name}</h3>
         <p className="text-sm leading-relaxed mb-4 opacity-90">{bot.description}</p>
-        <Link href={`/chat/${bot.id}`} className="w-full"> {/* Dynamic link to /chat/[botId] */}
+        <Link href={`/chat/${bot.id}`} className="w-full">
           <button
             className={`w-full py-2 rounded-lg font-medium transition-all ${
               darkMode

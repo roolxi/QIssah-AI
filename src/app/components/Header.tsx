@@ -4,12 +4,11 @@ import AuthButton from "./AuthButton";
 import { Dispatch, SetStateAction } from "react";
 
 interface HeaderProps {
-  darkMode: boolean;
   toggleTheme: () => void;
   setMenuOpen: Dispatch<SetStateAction<boolean>>;
 }
 
-export default function Header({ darkMode, toggleTheme, setMenuOpen }: HeaderProps) {
+export default function Header({ toggleTheme, setMenuOpen }: HeaderProps) {
   return (
     <header className="flex justify-between items-center px-6 py-3 bg-gray-900 text-white">
       <div className="text-xl font-bold">Qissah AI</div>
