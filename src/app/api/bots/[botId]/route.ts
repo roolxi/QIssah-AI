@@ -3,16 +3,11 @@ import { NextResponse } from "next/server";
 
 const prisma = new PrismaClient();
 
-interface Params {
-  botId: string;
-}
-
-// ✅ Correcting the type for `context` parameter
 export async function GET(
-  request: Request, 
-  context: { params: Params } // ✅ This is the correct way to define params
+  request: Request,
+  { params }: { params: { botId: string } } // ✅ Corrected this type definition
 ) {
-  const { botId } = context.params;
+  const { botId } = params;
 
   try {
     const bot = await prisma.bot.findUnique({
