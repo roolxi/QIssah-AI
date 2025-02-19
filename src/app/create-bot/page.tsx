@@ -16,11 +16,11 @@ export default function CreateBotPage() {
   const [loading, setLoading] = useState(false);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const target = e.target as HTMLInputElement;
-    const { name, value } = target;
-    const fieldValue = target.type === "checkbox" ? target.checked : value;
+    const { name, value, type, checked } = target;
+    const fieldValue = type === "checkbox" ? checked : value;
     setFormData((prev) => ({
       ...prev,
       [name]: fieldValue,
@@ -37,14 +37,20 @@ export default function CreateBotPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
+
       if (!response.ok) {
         const data = await response.json();
         throw new Error(data.error || "Failed to create bot");
       }
+
       const data = await response.json();
       router.push(`/chat/${data.id}`);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("An unknown error occurred");
+      }
     } finally {
       setLoading(false);
     }
