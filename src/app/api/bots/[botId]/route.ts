@@ -7,6 +7,9 @@ export async function GET(
   request: NextRequest,
   { params, searchParams }: { params: { botId: string }; searchParams: URLSearchParams }
 ) {
+  // لتجنب تحذير ESLint حول المتغير غير المستخدم
+  void searchParams;
+
   const { botId } = params;
 
   try {
