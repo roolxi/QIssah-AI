@@ -5,7 +5,10 @@ const prisma = new PrismaClient();
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Record<string, string> }
+  { params, searchParams }: { 
+    params: { botId: string }; 
+    searchParams: { [key: string]: string | string[] | undefined } 
+  }
 ) {
   const { botId } = params;
 
