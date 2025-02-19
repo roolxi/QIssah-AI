@@ -1,33 +1,34 @@
-import { PrismaClient } from '@prisma/client';
-import type { NextApiRequest, NextApiResponse } from 'next';
+import { PrismaClient } from "@prisma/client";
+import { NextResponse } from "next/server";
 
 const prisma = new PrismaClient();
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
+export async function GET(
+  request: Request,
+  { params }: { params?: { botId?: string } } // ✅ Made params optional to avoid strict TypeScript errors
 ) {
-  if (req.method !== 'GET') {
-    return res.status(405).json({ error: 'Method not allowed' });
+  if (!params?.botId) {
+    return NextResponse.json({ error: "Bot ID is required" }, { status: 400 });
   }
-
-  const { botId } = req.query;
 
   try {
     const bot = await prisma.bot.findUnique({
       where: {
-        id: botId as string,
+        id: params.botId,
       },
     });
 
     if (!bot) {
-      return res.status(404).json({ error: 'Bot not found' });
+      return NextResponse.json({ error: "Bot not found" }, { status: 404 });
     }
 
-    return res.status(200).json(bot);
+    return NextResponse.json(bot);
   } catch (error) {
-    console.error('Error fetching bot by ID:', error);
-    return res.status(500).json({ error: 'Failed to fetch bot' });
+    console.error("Error fetching bot by ID:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch bot" },
+      { status: 500 }
+    );
   } finally {
     await prisma.$disconnect();
   }
