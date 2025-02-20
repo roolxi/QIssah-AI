@@ -9,7 +9,7 @@ export type Bot = {
   name: string;
   description: string;
   image?: string;
-  personality?: string;
+  personality: string;
   accent?: string;
 };
 
@@ -18,14 +18,14 @@ export default function ChatBotIdPage() {
   const [bot, setBot] = useState<Bot | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [messages, setMessages] = useState<
-    { sender: "user" | "bot"; text: string }[]
-  >([]);
+  // نخزن كامل المحادثة هنا للحفاظ على السياق
+  const [messages, setMessages] = useState<{ sender: "user" | "bot"; text: string }[]>([]);
   const [newMessage, setNewMessage] = useState("");
+
   const [darkMode, setDarkMode] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // جلب تفاصيل البوت من /api/bots/[botId]
+  // جلب تفاصيل البوت من API
   useEffect(() => {
     const fetchBot = async () => {
       try {
@@ -44,10 +44,12 @@ export default function ChatBotIdPage() {
     fetchBot();
   }, [botId]);
 
-  // التعامل مع إرسال الرسالة إلى /api/chat
+  // دالة لإرسال الرسالة مع إرسال كامل المحادثة للسيرفر
   const handleSendMessage = async () => {
     if (!newMessage.trim()) return;
+
     const userMsg = { sender: "user" as const, text: newMessage };
+    // إضافة رسالة المستخدم إلى الحالة
     setMessages((prev) => [...prev, userMsg]);
     setNewMessage("");
 
@@ -57,15 +59,19 @@ export default function ChatBotIdPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           bot: {
-            name: bot?.name,
             personality: bot?.personality,
             accent: bot?.accent,
+            name: bot?.name,
           },
-          message: userMsg.text,
+          // إرسال كامل المحادثة مع الرسالة الجديدة
+          conversation: [...messages, userMsg],
         }),
       });
+
       if (!response.ok) throw new Error("Failed to get response from bot");
+
       const data = await response.json();
+      // إضافة رد البوت إلى المحادثة
       setMessages((prev) => [...prev, { sender: "bot", text: data.reply }]);
     } catch (error) {
       console.error("Error:", error);
@@ -88,17 +94,14 @@ export default function ChatBotIdPage() {
         darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"
       }`}
     >
-      <Header
-        darkMode={darkMode}
-        toggleTheme={() => setDarkMode(!darkMode)}
-        setMenuOpen={setMenuOpen}
-      />
+      <Header darkMode={darkMode} toggleTheme={() => setDarkMode(!darkMode)} setMenuOpen={setMenuOpen} />
       <MobileMenu darkMode={darkMode} menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
 
       <main className="max-w-3xl mx-auto px-4 py-8">
         <h1 className="text-2xl font-bold mb-4">{bot.name}</h1>
         <p className="mb-6">{bot.description}</p>
 
+        {/* صندوق المحادثة */}
         <div
           className={`rounded-lg p-4 mb-4 ${
             darkMode ? "bg-gray-800" : "bg-gray-200"
@@ -118,11 +121,14 @@ export default function ChatBotIdPage() {
           ))}
         </div>
 
+        {/* حقل الإدخال */}
         <div className="flex gap-2">
           <input
             type="text"
             className={`flex-grow px-3 py-2 rounded border focus:outline-none ${
-              darkMode ? "bg-gray-800 border-gray-600 text-white" : "bg-white border-gray-300 text-gray-900"
+              darkMode
+                ? "bg-gray-800 border-gray-600 text-white"
+                : "bg-white border-gray-300 text-gray-900"
             }`}
             placeholder="Type your message..."
             value={newMessage}
