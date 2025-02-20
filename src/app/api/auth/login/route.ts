@@ -26,7 +26,7 @@ export async function POST(req: Request) {
     // Generate JWT
     const token = jwt.sign({ id: user.id, email: user.email }, SECRET_KEY, { expiresIn: "7d" });
 
-    // NOTE: We do NOT include 'HttpOnly' here so the client can see 'token' in document.cookie
+    // NOTE: We  do NOT include 'HttpOnly' here so the client can see 'token' in document.cookie
     const response = NextResponse.json({ message: "Login successful", user });
     response.headers.set("Set-Cookie", `token=${token}; Path=/; Max-Age=604800; Secure`);
     return response;
