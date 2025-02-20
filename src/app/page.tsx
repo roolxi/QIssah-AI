@@ -1,80 +1,56 @@
-"use client";
-import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
-import Header from "./components/Header";
-import MobileMenu from "./components/MobileMenu";
-import BotCard from "./components/BotCard";
+import { PrismaClient } from "@prisma/client";
+import { NextResponse } from "next/server";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
-// تعريف نوع Bot
-export type Bot = {
-  id: string;
-  name: string;
-  description: string;
-  image: string;
-};
+const prisma = new PrismaClient();
+const SECRET_KEY = process.env.JWT_SECRET;
+if (!SECRET_KEY) {
+  throw new Error("JWT_SECRET is not defined in environment variables");
+}
 
-export default function HomePage() {
-  const [bots, setBots] = useState<Bot[]>([]);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState(true);
-  const router = useRouter();
+export async function POST(req: Request) {
+  try {
+    // Log the secret for debugging (remove in production)
+    console.log("JWT_SECRET:", SECRET_KEY);
 
-  // تبديل الوضع الداكن والفاتح
-  const toggleTheme = () => setDarkMode(!darkMode);
+    const { email, password } = await req.json();
+    if (!email || !password) {
+      return NextResponse.json({ error: "All fields are required" }, { status: 400 });
+    }
 
-  // عند الضغط على "ابدأ الرحلة" يتم التوجيه مباشرة إلى صفحة الشات
-  const handleStartStory = (botId: string) => {
-    router.push(`/chat/${botId}`);
-  };
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+    }
 
-  // ج لب بيانات البوتات من /api/bots
-  useEffect(() => {
-    const fetchBots = async () => {
-      try {
-        const response = await fetch("/api/bots");
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        setBots(data);
-      } catch (error) {
-        console.error("Error fetching bots:", error);
-      }
-    };
-    fetchBots();
-  }, []);
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+    }
 
-  return (
-    <div
-      className={`min-h-screen w-full transition-colors duration-500 ${
-        darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"
-      }`}
-    >
-      <Header darkMode={darkMode} toggleTheme={toggleTheme} setMenuOpen={setMenuOpen} />
-      <MobileMenu darkMode={darkMode} menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
+    // Use SECRET_KEY directly as a string (ensure it contains only ASCII characters)
+    const token = jwt.sign(
+      { id: user.id, email: user.email },
+      SECRET_KEY as string,
+      { expiresIn: "7d" }
+    );
 
-      <main className="px-6 py-8">
-        <motion.h2
-          className="text-xl md:text-2xl font-semibold mb-4"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
-        >
-          اختر قصتك وابدأ مغامرتك التفاعلية
-        </motion.h2>
+    const response = NextResponse.json({ message: "Login successful", user });
+    response.headers.append(
+      "Set-Cookie",
+      `token=${token}; Path=/; Max-Age=604800; Secure; SameSite=None; Domain=qissah-ai.vercel.app`
+    );
+    response.headers.append(
+      "Set-Cookie",
+      `username=${user.username}; Path=/; Max-Age=604800; Secure; SameSite=None; Domain=qissah-ai.vercel.app`
+    );
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {bots.map((bot, idx) => (
-            <BotCard
-              key={idx}
-              bot={bot}
-              darkMode={darkMode}
-              handleStartStory={() => handleStartStory(bot.id)}
-            />
-          ))}
-        </div>
-      </main>
-    </div>
-  );
+    return response;
+  } catch (error) {
+    console.error("Error processing login:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  } finally {
+    await prisma.$disconnect();
+  }
 }
