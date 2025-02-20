@@ -4,16 +4,19 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 const prisma = new PrismaClient();
-const SECRET_KEY = process.env.JWT_SECRET;
-if (!SECRET_KEY) {
+
+// Get the raw secret from the environment
+const rawSecret = process.env.JWT_SECRET;
+if (!rawSecret) {
   throw new Error("JWT_SECRET is not defined in environment variables");
 }
 
+// Sanitize the secret by removing non-ASCII characters
+const SECRET_KEY = rawSecret.replace(/[^\x00-\x7F]/g, "");
+console.log("Sanitized JWT_SECRET:", SECRET_KEY);
+
 export async function POST(req: Request) {
   try {
-    // Log the secret for debugging (remove in production)
-    console.log("JWT_SECRET:", SECRET_KEY);
-
     const { email, password } = await req.json();
     if (!email || !password) {
       return NextResponse.json({ error: "All fields are required" }, { status: 400 });
@@ -29,10 +32,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
-    // Use SECRET_KEY directly as a string (ensure it contains only ASCII characters)
+    // Generate JWT using a Buffer of the sanitized secret
     const token = jwt.sign(
       { id: user.id, email: user.email },
-      SECRET_KEY as string,
+      Buffer.from(SECRET_KEY, "utf-8"),
       { expiresIn: "7d" }
     );
 
