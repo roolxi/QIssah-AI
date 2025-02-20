@@ -100,11 +100,25 @@ export default function ChatBotIdPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
                 className={`max-w-[70%] px-3 py-2 rounded text-sm shadow ${
-                  message.sender === "user" ? "bg-blue-600 text-white self-end ml-auto" : "bg-gray-700 text-white self-start mr-auto"
+                  message.sender === "user"
+                    ? "bg-blue-600 text-white self-end ml-auto"
+                    : "bg-gray-700 text-white self-start mr-auto"
                 }`}
                 style={{ whiteSpace: "pre-wrap" }}
               >
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>{message.text}</ReactMarkdown>
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  components={
+                    message.sender === "bot"
+                      ? {
+                          // النص المائل من البوت يظهر بلون أزرق فاتح
+                          em: ({ node, ...props }) => <em style={{ color: "lightblue" }} {...props} />,
+                        }
+                      : {}
+                  }
+                >
+                  {message.text}
+                </ReactMarkdown>
               </motion.div>
             ))}
         </div>
