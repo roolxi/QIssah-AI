@@ -46,22 +46,21 @@ export default function HomePage() {
     fetchBots();
   }, []);
 
+  // دالة لإغلاق النافذة وتصفير البوت المحدد
+  const closeModal = () => {
+    console.log("Closing modal");
+    setShowModal(false);
+    setSelectedBot(null);
+  };
+
   return (
     <div
       className={`min-h-screen w-full transition-colors duration-500 ${
         darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"
       }`}
     >
-      <Header
-        darkMode={darkMode}
-        toggleTheme={toggleTheme}
-        setMenuOpen={setMenuOpen}
-      />
-      <MobileMenu
-        darkMode={darkMode}
-        menuOpen={menuOpen}
-        setMenuOpen={setMenuOpen}
-      />
+      <Header darkMode={darkMode} toggleTheme={toggleTheme} setMenuOpen={setMenuOpen} />
+      <MobileMenu darkMode={darkMode} menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
 
       <main className="px-6 py-8">
         <motion.h2
@@ -75,12 +74,7 @@ export default function HomePage() {
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {bots.map((bot, idx) => (
-            <BotCard
-              key={idx}
-              bot={bot}
-              darkMode={darkMode}
-              handleStartStory={handleStartStory}
-            />
+            <BotCard key={idx} bot={bot} darkMode={darkMode} handleStartStory={handleStartStory} />
           ))}
         </div>
       </main>
@@ -90,13 +84,8 @@ export default function HomePage() {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-gray-800 p-6 rounded-md text-center">
             <h3 className="text-lg font-bold mb-3">مغامرة جديدة!</h3>
-            <p>
-              {`لقد اخترت البوت "${selectedBot.name}". تستطيع الآن بدء قصتك التفاعلية.`}
-            </p>
-            <button
-              onClick={() => setShowModal(false)}
-              className="mt-4 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-            >
+            <p>{`لقد اخترت البوت "${selectedBot.name}". تستطيع الآن بدء قصتك التفاعلية.`}</p>
+            <button onClick={closeModal} className="mt-4 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
               إغلاق
             </button>
           </div>
