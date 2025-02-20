@@ -28,7 +28,7 @@ export default function HomePage() {
     router.push(`/chat/${botId}`);
   };
 
-  // جلب بيانات البوتات من /api/bots
+  // ج لب بيانات البوتات من /api/bots
   useEffect(() => {
     const fetchBots = async () => {
       try {
