@@ -11,13 +11,16 @@ export default function AuthButton() {
         onClick={() => router.push("/register")}
         className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-all"
       >
-        <FaUserPlus /> انضم إلينا
+        <FaUserPlus />
+        {/* يخفي النص على الشاشات الصغيرة */}
+        <span className="hidden sm:inline">انضم إلينا</span>
       </button>
       <button
         onClick={() => router.push("/login")}
         className="flex items-center gap-2 border border-white text-white px-4 py-2 rounded-lg hover:bg-white hover:text-black transition-all"
       >
-        <FaSignInAlt /> تسجيل الدخول
+        <FaSignInAlt />
+        <span className="hidden sm:inline">تسجيل الدخول</span>
       </button>
     </div>
   );

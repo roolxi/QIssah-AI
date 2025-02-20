@@ -1,7 +1,8 @@
 "use client";
 import { FaMoon, FaSun, FaBars } from "react-icons/fa";
-import AuthButton from "./AuthButton";
-import UserMenu from "./UserMenu";
+import AuthButton from "@/app/components/AuthButton";
+import UserMenu from "@/app/components/UserMenu";
+
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 interface HeaderProps {
