@@ -111,8 +111,7 @@ export default function ChatBotIdPage() {
                   components={
                     message.sender === "bot"
                       ? {
-                          // النص المائل من البوت يظهر بلون أزرق فاتح
-                          em: ({ node, ...props }) => <em style={{ color: "lightblue" }} {...props} />,
+                          em: ({ ...props }) => <em style={{ color: "lightblue" }} {...props} />,
                         }
                       : {}
                   }
