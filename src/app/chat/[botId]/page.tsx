@@ -1,6 +1,10 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { motion } from "framer-motion";
+import { FaPaperPlane } from "react-icons/fa";
 import Header from "@/app/components/Header";
 import MobileMenu from "@/app/components/MobileMenu";
 
@@ -18,7 +22,7 @@ export default function ChatBotIdPage() {
   const [bot, setBot] = useState<Bot | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  // نخزن كامل المحادثة هنا للحفاظ على السياق
+  // نخزن كامل المحادثة هنا
   const [messages, setMessages] = useState<{ sender: "user" | "bot"; text: string }[]>([]);
   const [newMessage, setNewMessage] = useState("");
 
@@ -43,6 +47,7 @@ export default function ChatBotIdPage() {
 
   const handleSendMessage = async () => {
     if (!newMessage.trim()) return;
+
     const userMsg = { sender: "user" as const, text: newMessage };
     setMessages((prev) => [...prev, userMsg]);
     setNewMessage("");
@@ -70,34 +75,57 @@ export default function ChatBotIdPage() {
 
   return (
     <div
-      className={`min-h-screen w-full transition-colors duration-500 ${darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"}`}
+      className={`min-h-screen w-full transition-colors duration-500 ${
+        darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"
+      }`}
     >
       <Header darkMode={darkMode} toggleTheme={() => setDarkMode(!darkMode)} setMenuOpen={setMenuOpen} />
       <MobileMenu darkMode={darkMode} menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
+
       <main className="max-w-3xl mx-auto px-4 py-8">
         <h1 className="text-2xl font-bold mb-4">{bot.name}</h1>
         <p className="mb-6">{bot.description}</p>
-        <div className={`rounded-lg p-4 mb-4 ${darkMode ? "bg-gray-800" : "bg-gray-200"} h-[400px] overflow-y-auto flex flex-col`}>
-          {messages.map((message, index) => (
-            <div
-              key={index}
-              className={`mb-2 max-w-[70%] px-3 py-2 rounded text-sm shadow ${message.sender === "user" ? "bg-blue-600 text-white self-end ml-auto" : "bg-gray-700 text-white self-start mr-auto"}`}
-            >
-              {message.text}
-            </div>
-          ))}
+
+        {/* صندوق المحادثة مع عرض الرسائل من الأسفل للأعلى */}
+        <div
+          className={`rounded-lg p-4 mb-4 ${darkMode ? "bg-gray-800" : "bg-gray-200"} h-[400px] overflow-y-auto flex flex-col-reverse gap-3`}
+        >
+          {messages
+            .slice(0)
+            .reverse()
+            .map((message, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+                className={`max-w-[70%] px-3 py-2 rounded text-sm shadow ${
+                  message.sender === "user" ? "bg-blue-600 text-white self-end ml-auto" : "bg-gray-700 text-white self-start mr-auto"
+                }`}
+                style={{ whiteSpace: "pre-wrap" }}
+              >
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>{message.text}</ReactMarkdown>
+              </motion.div>
+            ))}
         </div>
-        <div className="flex gap-2">
+
+        {/* صندوق الإدخال */}
+        <div className="flex gap-2 items-center">
           <input
             type="text"
-            className={`flex-grow px-3 py-2 rounded border focus:outline-none ${darkMode ? "bg-gray-800 border-gray-600 text-white" : "bg-white border-gray-300 text-gray-900"}`}
+            className={`flex-grow px-3 py-2 rounded border focus:outline-none ${
+              darkMode ? "bg-gray-800 border-gray-600 text-white" : "bg-white border-gray-300 text-gray-900"
+            }`}
             placeholder="Type your message..."
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
           />
-          <button onClick={handleSendMessage} className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium">
-            Send
+          <button
+            onClick={handleSendMessage}
+            className="flex items-center justify-center p-3 rounded-full bg-blue-600 hover:bg-blue-700 transition-colors"
+          >
+            <FaPaperPlane className="text-white" size={20} />
           </button>
         </div>
       </main>
