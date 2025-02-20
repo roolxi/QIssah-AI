@@ -26,9 +26,13 @@ export async function POST(req: Request) {
     // Generate JWT
     const token = jwt.sign({ id: user.id, email: user.email }, SECRET_KEY, { expiresIn: "7d" });
 
-    // NOTE: We  do NOT include 'HttpOnly' here so the client can see 'token' in document.cookie
+    // Create response and set cookies for token and username
     const response = NextResponse.json({ message: "Login successful", user });
-    response.headers.set("Set-Cookie", `token=${token}; Path=/; Max-Age=604800; Secure`);
+    
+    // Use headers.append to add multiple Set-Cookie headers.
+    response.headers.append("Set-Cookie", `token=${token}; Path=/; Max-Age=604800; Secure`);
+    response.headers.append("Set-Cookie", `username=${user.username}; Path=/; Max-Age=604800; Secure`);
+    
     return response;
   } catch (error) {
     console.error("Error processing login:", error);
