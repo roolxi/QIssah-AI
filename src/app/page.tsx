@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Header from "./components/Header";
 import MobileMenu from "./components/MobileMenu";
@@ -17,16 +18,14 @@ export default function HomePage() {
   const [bots, setBots] = useState<Bot[]>([]);
   const [menuOpen, setMenuOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(true);
-  const [showModal, setShowModal] = useState(false);
-  const [selectedBot, setSelectedBot] = useState<Bot | null>(null);
+  const router = useRouter();
 
   // تبديل الوضع الداكن والفاتح
   const toggleTheme = () => setDarkMode(!darkMode);
 
-  // عند الضغط على "ابدأ الرحلة"
-  const handleStartStory = (bot: Bot) => {
-    setSelectedBot(bot);
-    setShowModal(true);
+  // عند الضغط على "ابدأ الرحلة" يتم التوجيه مباشرة إلى صفحة الشات
+  const handleStartStory = (botId: string) => {
+    router.push(`/chat/${botId}`);
   };
 
   // جلب بيانات البوتات من /api/bots
@@ -45,13 +44,6 @@ export default function HomePage() {
     };
     fetchBots();
   }, []);
-
-  // دالة لإغلاق النافذة وتصفير البوت المحدد
-  const closeModal = () => {
-    console.log("Closing modal");
-    setShowModal(false);
-    setSelectedBot(null);
-  };
 
   return (
     <div
@@ -74,23 +66,15 @@ export default function HomePage() {
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {bots.map((bot, idx) => (
-            <BotCard key={idx} bot={bot} darkMode={darkMode} handleStartStory={handleStartStory} />
+            <BotCard
+              key={idx}
+              bot={bot}
+              darkMode={darkMode}
+              handleStartStory={() => handleStartStory(bot.id)}
+            />
           ))}
         </div>
       </main>
-
-      {/* نافذة منبثقة عند اختيار بوت */}
-      {showModal && selectedBot && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-gray-800 p-6 rounded-md text-center">
-            <h3 className="text-lg font-bold mb-3">مغامرة جديدة!</h3>
-            <p>{`لقد اخترت البوت "${selectedBot.name}". تستطيع الآن بدء قصتك التفاعلية.`}</p>
-            <button onClick={closeModal} className="mt-4 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
-              إغلاق
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
