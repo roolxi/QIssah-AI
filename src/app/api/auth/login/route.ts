@@ -28,11 +28,17 @@ export async function POST(req: Request) {
 
     // Create response and set cookies for token and username
     const response = NextResponse.json({ message: "Login successful", user });
-    
-    // Use headers.append to add multiple Set-Cookie headers.
-    response.headers.append("Set-Cookie", `token=${token}; Path=/; Max-Age=604800; Secure`);
-    response.headers.append("Set-Cookie", `username=${user.username}; Path=/; Max-Age=604800; Secure`);
-    
+
+    // Set cookies with Domain, Secure, and SameSite=None
+    response.headers.append(
+      "Set-Cookie",
+      `token=${token}; Path=/; Max-Age=604800; Secure; SameSite=None; Domain=qissah-ai.vercel.app`
+    );
+    response.headers.append(
+      "Set-Cookie",
+      `username=${user.username}; Path=/; Max-Age=604800; Secure; SameSite=None; Domain=qissah-ai.vercel.app`
+    );
+
     return response;
   } catch (error) {
     console.error("Error processing login:", error);
