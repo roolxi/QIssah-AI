@@ -11,6 +11,9 @@ if (!SECRET_KEY) {
 
 export async function POST(req: Request) {
   try {
+    // Log the secret for debugging (remove in production)
+    console.log("JWT_SECRET:", SECRET_KEY);
+
     const { email, password } = await req.json();
     if (!email || !password) {
       return NextResponse.json({ error: "All fields are required" }, { status: 400 });
@@ -26,14 +29,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
-    // Generate JWT using a Buffer for the secret to handle non-ASCII characters
+    // Use SECRET_KEY directly as a string (ensure it contains only ASCII characters)
     const token = jwt.sign(
       { id: user.id, email: user.email },
-      Buffer.from(SECRET_KEY as string, "utf-8"),
+      SECRET_KEY as string,
       { expiresIn: "7d" }
     );
 
-    // Create response and set cookies for token and username
     const response = NextResponse.json({ message: "Login successful", user });
     response.headers.append(
       "Set-Cookie",
