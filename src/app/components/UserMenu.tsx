@@ -5,12 +5,20 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function UserMenu() {
+  const [username, setUsername] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // افترض إن اسم المستخدم مخزن (مثلاً من الكوكيز أو حالة)
-  const [username, setUsername] = useState("User");
+  useEffect(() => {
+    // مثال: جلب اسم المستخدم من الكوكيز
+    const match = document.cookie.match('(^|;)\\s*username\\s*=\\s*([^;]+)');
+    if (match && match.pop()) {
+      setUsername(match.pop()!);
+    } else {
+      setUsername("User");
+    }
+  }, []);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -23,8 +31,9 @@ export default function UserMenu() {
   }, []);
 
   const handleLogout = () => {
-    // مسح التوكن من الكوكيز أو التخزين المحلي
+    // مسح التوكن واسم المستخدم من الكوكيز
     document.cookie = "token=; Path=/; Max-Age=0";
+    document.cookie = "username=; Path=/; Max-Age=0";
     router.push("/login");
   };
 
