@@ -24,7 +24,7 @@ export default function BotCard({ bot }: BotCardProps) {
         transition={{ duration: 0.5 }}
         style={{
           width: "100%",
-          maxWidth: "330px", /* تصغير الحجم أكثر لرؤية 1.5 بطاقة أفقياً */
+          maxWidth: "380px", /* تصغير الحجم أكثر لرؤية 1.75 بطاقة أفقياً */
           height: "auto",
           aspectRatio: "710/300",
           margin: "0 auto", /* ضبط التوسيط */
