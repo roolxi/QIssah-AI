@@ -10,7 +10,7 @@ interface BotCardProps {
     name: string;
     description: string;
     image: string;
-  };
+  };// eslint-disable-next-line @typescript-eslint/no-unused-vars
   darkMode: boolean;
 }
 
