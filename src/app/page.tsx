@@ -49,7 +49,7 @@ export default function HomePage() {
           اختر قصتك وابدأ مغامرتك التفاعلية
         </h2>
 
-        <div className="relative" style={{ paddingTop: "30px", paddingBottom: "30px" }}> {/* تكبير المساحة حول القائمة */}
+        <div className="relative" style={{ paddingTop: "20px", paddingBottom: "20px" }}> 
           <div 
             ref={scrollRef} 
             className="flex space-x-4 overflow-x-auto scrollbar-hide touch-pan-x"
@@ -58,13 +58,13 @@ export default function HomePage() {
               scrollBehavior: "smooth", 
               paddingLeft: "0px", 
               paddingRight: "0px", 
-              overflowX: "auto", /* السماح بالسحب بدون ظهور الشريط */
-              scrollbarWidth: "none", /* إخفاء شريط التمرير */
+              overflowX: "auto", 
+              scrollbarWidth: "none", 
               msOverflowStyle: "none"
             }}
           >
             {bots.map((bot, idx) => (
-              <div key={idx} className="min-w-[50vw] md:min-w-[33vw]" style={{ paddingTop: "10px", paddingBottom: "10px" }}> {/* إضافة مساحة داخلية */}
+              <div key={idx} className="min-w-[50vw] md:min-w-[33vw] transform scale-95"> 
                 <BotCard bot={bot} />
               </div>
             ))}
@@ -72,7 +72,6 @@ export default function HomePage() {
         </div>
       </main>
 
-      {/* CSS إضافي لإخفاء شريط التمرير */}
       <style jsx>{`
         ::-webkit-scrollbar {
           display: none;
