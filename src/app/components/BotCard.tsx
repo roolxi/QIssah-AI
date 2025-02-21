@@ -50,8 +50,8 @@ export default function BotCard({ bot }: BotCardProps) {
             <FaEllipsisV className="text-lg opacity-90" />
           </div>
           <div className="mt-0">
-            <h3 className="text-sm font-bold uppercase mb-1">{bot.name}</h3>
-            <p className="text-[10px] leading-tight font-semibold">{bot.description}</p>
+            <h3 className="text-base font-bold uppercase mb-1">{bot.name}</h3>
+            <p className="text-[11px] leading-tight font-semibold">{bot.description}</p>
           </div>
           <div className="flex items-center justify-between text-[10px] mt-auto">
             <div className="flex items-center gap-1">
@@ -60,12 +60,12 @@ export default function BotCard({ bot }: BotCardProps) {
             </div>
             <div className="flex items-center gap-3 text-center">
               <div className="flex flex-col items-center">
-                <FaEye className="text-gray-300 text-lg" />
-                <span className="text-[12px] font-bold">35.7K</span>
+                <FaEye className="text-gray-300 text-[14px]" />
+                <span className="text-[11px] font-bold">35.7K</span>
               </div>
               <div className="flex flex-col items-center">
-                <FaHeart className="text-red-500 text-lg" />
-                <span className="text-[12px] font-bold">1.6K</span>
+                <FaHeart className="text-red-500 text-[14px]" />
+                <span className="text-[11px] font-bold">1.6K</span>
               </div>
             </div>
           </div>
