@@ -1,6 +1,5 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
 import Header from "./components/Header";
 import MobileMenu from "./components/MobileMenu";
 import BotCard from "./components/BotCard";
@@ -17,7 +16,6 @@ export default function HomePage() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(true);
   const scrollRef = useRef<HTMLDivElement | null>(null);
-  const [activeIndex, setActiveIndex] = useState(0);
 
   const toggleTheme = () => setDarkMode(!darkMode);
 
@@ -37,15 +35,6 @@ export default function HomePage() {
     fetchBots();
   }, []);
 
-  const handleScroll = () => {
-    if (scrollRef.current) {
-      const scrollLeft = scrollRef.current.scrollLeft;
-      const cardWidth = window.innerWidth * 0.5;
-      const newIndex = Math.round(scrollLeft / cardWidth);
-      setActiveIndex(newIndex);
-    }
-  };
-
   return (
     <div
       className={`min-h-screen w-full transition-colors duration-500 ${
@@ -56,31 +45,20 @@ export default function HomePage() {
       <MobileMenu darkMode={darkMode} menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
 
       <main className="px-6 py-8">
-        <motion.h2
-          className="text-xl md:text-2xl font-semibold mb-4"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
-        >
+        <h2 className="text-xl md:text-2xl font-semibold mb-4">
           اختر قصتك وابدأ مغامرتك التفاعلية
-        </motion.h2>
+        </h2>
 
         <div className="relative">
           <div 
             ref={scrollRef} 
-            className="flex space-x-6 overflow-x-auto scrollbar-hide touch-pan-x snap-x snap-mandatory"
-            style={{ WebkitOverflowScrolling: "touch", scrollBehavior: "smooth", paddingLeft: "5vw", paddingRight: "5vw", overflow: "hidden" }}
-            onScroll={handleScroll}
+            className="flex space-x-4 overflow-x-auto scrollbar-hide touch-pan-x"
+            style={{ WebkitOverflowScrolling: "touch", scrollBehavior: "smooth", paddingLeft: "5vw", paddingRight: "5vw" }}
           >
             {bots.map((bot, idx) => (
-              <motion.div 
-                key={idx} 
-                className="min-w-[60vw] md:min-w-[45vw] snap-start relative"
-                animate={{ scale: activeIndex === idx ? 1.1 : 1, boxShadow: activeIndex === idx ? "0px 4px 15px rgba(255, 255, 255, 0.2)" : "none" }}
-                transition={{ duration: 0.3 }}
-              >
+              <div key={idx} className="min-w-[50vw] md:min-w-[33vw]">
                 <BotCard bot={bot} />
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
