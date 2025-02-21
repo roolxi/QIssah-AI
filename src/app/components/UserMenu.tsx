@@ -11,10 +11,11 @@ export default function UserMenu() {
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // مثال: جلب اسم المستخدم من الكوكيز
-    const match = document.cookie.match('(^|;)\\s*username\\s*=\\s*([^;]+)');
-    if (match && match.pop()) {
-      setUsername(match.pop()!);
+    // Match the username cookie using a regex
+    const match = document.cookie.match(/(?:^|;\s*)username=([^;]+)/);
+    if (match && match[1]) {
+      // Decode the percent-encoded value
+      setUsername(decodeURIComponent(match[1]));
     } else {
       setUsername("User");
     }
@@ -31,7 +32,7 @@ export default function UserMenu() {
   }, []);
 
   const handleLogout = () => {
-    // مسح التوكن واسم المستخدم من الكوكيز
+    // Remove token and username cookies
     document.cookie = "token=; Path=/; Max-Age=0";
     document.cookie = "username=; Path=/; Max-Age=0";
     router.push("/login");
