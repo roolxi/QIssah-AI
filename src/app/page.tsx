@@ -23,12 +23,7 @@ export default function HomePage() {
   // تبديل الوضع الداكن والفاتح
   const toggleTheme = () => setDarkMode(!darkMode);
 
-  // عند الضغط على "ابدأ الرحلة" يتم التوجيه مباشرة إلى صفحة الشات
-  const handleStartStory = (botId: string) => {
-    router.push(`/chat/${botId}`);
-  };
-
-  // ج لب بيانات البوتات من /api/bots
+  // جلب بيانات البوتات من /api/bots
   useEffect(() => {
     const fetchBots = async () => {
       try {
@@ -66,12 +61,7 @@ export default function HomePage() {
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {bots.map((bot, idx) => (
-            <BotCard
-              key={idx}
-              bot={bot}
-              darkMode={darkMode}
-              handleStartStory={() => handleStartStory(bot.id)}
-            />
+            <BotCard key={idx} bot={bot} />
           ))}
         </div>
       </main>
