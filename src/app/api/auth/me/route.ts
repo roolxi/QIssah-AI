@@ -30,8 +30,8 @@ export async function GET(req: Request) {
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
-    // إزالة كلمة المرور بدون إنشاء متغير غير مستخدم:
-    const userData = (({ password, ...rest }) => rest)(user);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...userData } = user;
     return NextResponse.json(userData);
   } catch (error) {
     console.error("Error fetching user profile:", error);
