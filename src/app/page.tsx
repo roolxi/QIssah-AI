@@ -42,7 +42,7 @@ export default function HomePage() {
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: direction === "left" ? -400 : 400, behavior: "smooth" });
+      scrollRef.current.scrollBy({ left: direction === "left" ? -200 : 200, behavior: "smooth" });
     }
   };
 
@@ -75,7 +75,9 @@ export default function HomePage() {
           </button>
           <div ref={scrollRef} className="flex space-x-4 overflow-x-auto scrollbar-hide">
             {bots.map((bot, idx) => (
-              <BotCard key={idx} bot={bot} />
+              <div className="scale-50"> {/* تقليل حجم البطاقة إلى 50% */}
+                <BotCard key={idx} bot={bot} />
+              </div>
             ))}
           </div>
           <button
