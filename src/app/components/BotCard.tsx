@@ -53,19 +53,19 @@ export default function BotCard({ bot }: BotCardProps) {
             <h3 className="text-sm font-bold uppercase mb-1">{bot.name}</h3>
             <p className="text-[10px] leading-tight font-semibold">{bot.description}</p>
           </div>
-          <div className="flex items-center justify-between text-[8px] mt-auto">
+          <div className="flex items-center justify-between text-[10px] mt-auto">
             <div className="flex items-center gap-1">
               <FaUser className="text-gray-300" />
               <span className="text-blue-400 font-bold">NAX_45549</span>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1">
-                <FaEye className="text-gray-300" />
-                <span>35.7K</span>
+            <div className="flex items-center gap-3 text-center">
+              <div className="flex flex-col items-center">
+                <FaEye className="text-gray-300 text-lg" />
+                <span className="text-[12px] font-bold">35.7K</span>
               </div>
-              <div className="flex items-center gap-1">
-                <FaHeart className="text-red-500" />
-                <span>1.6K</span>
+              <div className="flex flex-col items-center">
+                <FaHeart className="text-red-500 text-lg" />
+                <span className="text-[12px] font-bold">1.6K</span>
               </div>
             </div>
           </div>
