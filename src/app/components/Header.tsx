@@ -4,7 +4,7 @@ import AuthButton from "./AuthButton";
 import UserMenu from "./UserMenu";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import Image from "next/image";
-import Link from "next/link"; // نستخدمه لجعل الصورة قابلة للضغط
+import Link from "next/link";
 
 interface HeaderProps {
   darkMode: boolean;
@@ -22,20 +22,21 @@ export default function Header({ darkMode, toggleTheme, setMenuOpen }: HeaderPro
 
   return (
     <header
-      className={`flex justify-between items-center px-6 py-3 ${
+      className={`flex items-center justify-between h-16 px-4 ${
         darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"
       }`}
+      style={{ minHeight: "4rem" }}
     >
-      {/* نلف الصورة بـ Link لجعلها قابلة للضغط */}
-      <Link href="/">
-        {/* Image من Next.js مع عرض/ارتفاع أكبر، مثلاً 80x80 */}
+      {/* الشعار مع تكبير الحجم */}
+      <Link href="/" className="flex items-center">
         <Image
           src="/logo.png"
           alt="Logo"
-          width={80}
-          height={80}
-          className="cursor-pointer"
+          // يمكنك تغيير هذه الأرقام لتكبير/تصغير الشعار
+          width={64}
+          height={64}
           priority
+          className="cursor-pointer object-contain w-16 h-16"
         />
       </Link>
 
