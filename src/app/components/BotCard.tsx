@@ -17,12 +17,17 @@ export default function BotCard({ bot }: BotCardProps) {
   return (
     <Link href={`/chat/${bot.id}`} className="no-underline">
       <motion.div
-        className="relative w-[710px] h-[300px] rounded-2xl overflow-hidden shadow-lg bg-[#212121] flex mx-auto fixed-size"
+        className="relative rounded-2xl overflow-hidden shadow-lg bg-[#212121] flex mx-auto"
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5 }}
-        style={{ maxWidth: "710px", maxHeight: "300px" }}
+        style={{
+          width: "100%",
+          maxWidth: "710px",
+          height: "auto",
+          aspectRatio: "710/300"
+        }}
       >
         {/* صورة الخلفية على الجانب الأيسر */}
         <div className="w-1/2 h-full relative">
