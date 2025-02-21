@@ -39,28 +39,25 @@ export default function HomePage() {
     <div
       className={`min-h-screen w-full transition-colors duration-500 ${
         darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"
-      } scrollbar-hide overflow-hidden`}
-      style={{ overflow: "hidden" }}
+      } scrollbar-hide`}
     >
       <Header darkMode={darkMode} toggleTheme={toggleTheme} setMenuOpen={setMenuOpen} />
       <MobileMenu darkMode={darkMode} menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
 
-      <main className="px-6 py-8">
-        <h2 className="text-xl md:text-2xl font-semibold mb-4">
+      <main className="px-6 py-12"> {/* زيادة التباعد العلوي والسفلي */}
+        <h2 className="text-xl md:text-2xl font-semibold mb-6">
           اختر قصتك وابدأ مغامرتك التفاعلية
         </h2>
 
-        <div className="relative">
+        <div className="relative py-4"> {/* زيادة التباعد العلوي والسفلي حول القائمة */}
           <div 
             ref={scrollRef} 
-            className="flex space-x-4 overflow-x-auto scrollbar-hide touch-pan-x"
+            className="flex space-x-4 overflow-x-auto scrollbar-hide touch-pan-x py-2"
             style={{
               WebkitOverflowScrolling: "touch", 
               scrollBehavior: "smooth", 
               paddingLeft: "0px", 
-              paddingRight: "0px", 
-              overflowX: "hidden", 
-              overflowY: "hidden"
+              paddingRight: "0px"
             }}
           >
             {bots.map((bot, idx) => (
