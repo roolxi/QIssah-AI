@@ -19,7 +19,7 @@ export async function GET(req: Request) {
     let decoded;
     try {
       decoded = jwt.verify(token, SECRET_KEY as string);
-    } catch (_err) {
+    } catch {
       return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
     const userId = (decoded as any).id;
@@ -30,8 +30,8 @@ export async function GET(req: Request) {
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
-    // تجاهل  كلمة المرور باستخدام alias
-    const { password: _, ...userData } = user;
+    // إزالة كلمة المرور بدون إنشاء متغير غير مستخدم:
+    const userData = (({ password, ...rest }) => rest)(user);
     return NextResponse.json(userData);
   } catch (error) {
     console.error("Error fetching user profile:", error);
