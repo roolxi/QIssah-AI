@@ -31,7 +31,7 @@ export default function UserMenu() {
   }, []);
 
   const handleLogout = () => {
-    // Remove cookies using the same attributes
+    // Remove cookies using the same domain, path, samesite, and secure
     document.cookie = "token=; Path=/; Domain=qissah-ai.vercel.app; Max-Age=0; SameSite=None; Secure";
     document.cookie = "username=; Path=/; Domain=qissah-ai.vercel.app; Max-Age=0; SameSite=None; Secure";
     router.push("/login");
@@ -43,7 +43,6 @@ export default function UserMenu() {
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 p-2 rounded transition-all hover:bg-gray-200 dark:hover:bg-gray-700"
       >
-        {/* On small screens, show only the profile icon */}
         <span className="hidden sm:inline text-current">{username}</span>
         <FaUserCircle className="text-current" size={24} />
         <FaChevronDown className="hidden sm:inline text-current" size={12} />
@@ -54,11 +53,6 @@ export default function UserMenu() {
             <li>
               <Link href="/profile" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600">
                 Profile
-              </Link>
-            </li>
-            <li>
-              <Link href="/settings" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600">
-                Settings
               </Link>
             </li>
             <li>

@@ -29,13 +29,18 @@ export default function LoginPage() {
     setLoading(false);
 
     if (!response.ok) {
-      setError(data.error);
+      setError(data.error || "Login failed");
       return;
     }
 
-    // Set cookies with full attributes
-    document.cookie = `token=${data.token}; Path=/; Max-Age=604800; Secure; SameSite=None; Domain=qissah-ai.vercel.app`;
-    document.cookie = `username=${encodeURIComponent(data.user.username)}; Path=/; Max-Age=604800; Secure; SameSite=None; Domain=qissah-ai.vercel.app`;
+    // تأكد إن data.token موجود
+    if (data.token) {
+      document.cookie = `token=${data.token}; Path=/; Max-Age=604800; Secure; SameSite=None; Domain=qissah-ai.vercel.app`;
+    }
+    // لو عندك username من الـ API
+    if (data.user?.username) {
+      document.cookie = `username=${encodeURIComponent(data.user.username)}; Path=/; Max-Age=604800; Secure; SameSite=None; Domain=qissah-ai.vercel.app`;
+    }
 
     router.push("/");
   };

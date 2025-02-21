@@ -28,11 +28,19 @@ export default function RegisterPage() {
     setLoading(false);
 
     if (!response.ok) {
-      setError(data.error);
+      setError(data.error || "Registration failed");
       return;
     }
 
-    document.cookie = `token=${data.token}; Path=/; Max-Age=604800; Secure`;
+    // تأكد إن data.token موجود
+    if (data.token) {
+      document.cookie = `token=${data.token}; Path=/; Max-Age=604800; Secure; SameSite=None; Domain=qissah-ai.vercel.app`;
+    }
+    // لو عندك username من الـ API
+    if (data.user?.username) {
+      document.cookie = `username=${encodeURIComponent(data.user.username)}; Path=/; Max-Age=604800; Secure; SameSite=None; Domain=qissah-ai.vercel.app`;
+    }
+
     router.push("/");
   };
 
