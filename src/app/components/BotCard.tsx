@@ -24,20 +24,20 @@ export default function BotCard({ bot }: BotCardProps) {
         transition={{ duration: 0.5 }}
       >
         {/* صورة الخلفية */}
-        <div className="w-1/2 h-full relative">
+        <div className="absolute inset-0">
           <Image
             src={bot.image}
             alt={bot.name}
             layout="fill"
             objectFit="cover"
+            className="absolute inset-0"
           />
+          {/* التدرج الداكن فوق الصورة */}
+          <div className="absolute inset-0 bg-gradient-to-l from-black via-black/80 to-transparent" />
         </div>
 
-        {/* التدرج الداكن من اليمين إلى منتصف الصورة */}
-        <div className="absolute inset-0 bg-gradient-to-l from-black via-black/70 to-transparent" />
-
         {/* محتوى النص */}
-        <div className="w-1/2 p-6 flex flex-col justify-between text-white z-10">
+        <div className="relative w-1/2 p-6 flex flex-col justify-between text-white z-10 ml-auto">
           <div className="flex justify-end">
             <FaEllipsisV className="text-2xl opacity-90" />
           </div>
