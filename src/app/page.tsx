@@ -18,6 +18,7 @@ export default function HomePage() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(true);
   const scrollRef = useRef<HTMLDivElement | null>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
 
   const toggleTheme = () => setDarkMode(!darkMode);
 
@@ -37,9 +38,12 @@ export default function HomePage() {
     fetchBots();
   }, []);
 
-  const scroll = (direction: 'left' | 'right') => {
+  const handleScroll = () => {
     if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: direction === "left" ? -window.innerWidth * 0.66 : window.innerWidth * 0.66, behavior: "smooth" });
+      const scrollLeft = scrollRef.current.scrollLeft;
+      const cardWidth = window.innerWidth * 0.66;
+      const newIndex = Math.round(scrollLeft / cardWidth);
+      setActiveIndex(newIndex);
     }
   };
 
@@ -63,25 +67,23 @@ export default function HomePage() {
         </motion.h2>
 
         <div className="relative">
-          <button
-            className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-black/50 p-2 rounded-full z-10"
-            onClick={() => scroll("left")}
+          <div 
+            ref={scrollRef} 
+            className="flex space-x-4 overflow-x-auto scrollbar-hide touch-pan-x snap-x snap-mandatory"
+            style={{ WebkitOverflowScrolling: "touch", scrollBehavior: "smooth" }}
+            onScroll={handleScroll}
           >
-            <FaChevronLeft className="text-white text-xl" />
-          </button>
-          <div ref={scrollRef} className="flex space-x-4 overflow-x-auto scrollbar-hide">
             {bots.map((bot, idx) => (
-              <div key={idx} className="min-w-[66vw]">
+              <motion.div 
+                key={idx} 
+                className="min-w-[70vw] md:min-w-[66vw] snap-start relative"
+                animate={{ scale: activeIndex === idx ? 1.1 : 1, boxShadow: activeIndex === idx ? "0px 4px 15px rgba(255, 255, 255, 0.2)" : "none" }}
+                transition={{ duration: 0.3 }}
+              >
                 <BotCard bot={bot} />
-              </div>
+              </motion.div>
             ))}
           </div>
-          <button
-            className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-black/50 p-2 rounded-full z-10"
-            onClick={() => scroll("right")}
-          >
-            <FaChevronRight className="text-white text-xl" />
-          </button>
         </div>
       </main>
     </div>
