@@ -1,13 +1,13 @@
 import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken"; // تأكد إن هالسطر موجود
+import jwt from "jsonwebtoken";
 
 const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
   try {
-    // استخراج التوكن من الكوكيز
+    // استخراج الكوكي من الهيدر
     const cookieHeader = req.headers.get("cookie") || "";
     const tokenMatch = cookieHeader.match(/(?:^|;\s*)token=([^;]+)/);
     if (!tokenMatch) {
@@ -18,7 +18,7 @@ export async function POST(req: Request) {
     let decoded;
     try {
       decoded = jwt.verify(token, process.env.JWT_SECRET as string);
-    } catch (err) {
+    } catch (_err) {
       return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
     const userId = (decoded as any).id;
@@ -44,8 +44,8 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({ message: "Profile updated successfully", user: updatedUser });
-  } catch (err) {
-    console.error("Error updating user:", err);
+  } catch (_err) {
+    console.error("Error updating user:", _err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   } finally {
     await prisma.$disconnect();
