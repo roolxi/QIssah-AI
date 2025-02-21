@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import Header from "./components/Header";
 import MobileMenu from "./components/MobileMenu";
 import BotCard from "./components/BotCard";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+
 
 export type Bot = {
   id: string;
