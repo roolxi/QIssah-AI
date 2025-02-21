@@ -22,13 +22,19 @@ export default function ChatBotIdPage() {
   const [bot, setBot] = useState<Bot | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
   // نخزن كامل المحادثة هنا
   const [messages, setMessages] = useState<{ sender: "user" | "bot"; text: string }[]>([]);
   const [newMessage, setNewMessage] = useState("");
 
+  // وضع النهار/الليل والقائمة
   const [darkMode, setDarkMode] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
 
+  // معلومات المستخدم من البروفايل (botName, bio)
+  const [userProfile, setUserProfile] = useState({ botName: "", bio: "" });
+
+  // جلب بيانات البوت
   useEffect(() => {
     const fetchBot = async () => {
       try {
@@ -45,6 +51,26 @@ export default function ChatBotIdPage() {
     fetchBot();
   }, [botId]);
 
+  // جلب بيانات المستخدم (البروفايل) من /api/auth/me
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const res = await fetch("/api/auth/me");
+        if (res.ok) {
+          const data = await res.json();
+          setUserProfile({
+            botName: data.botName || "",
+            bio: data.bio || "",
+          });
+        }
+      } catch (err) {
+        console.error("Failed to fetch user profile:", err);
+      }
+    };
+    fetchUserProfile();
+  }, []);
+
+  // إرسال الرسالة
   const handleSendMessage = async () => {
     if (!newMessage.trim()) return;
 
@@ -57,7 +83,14 @@ export default function ChatBotIdPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          bot: { personality: bot?.personality, accent: bot?.accent, name: bot?.name },
+          bot: {
+            personality: bot?.personality,
+            accent: bot?.accent,
+            name: bot?.name,
+            // هنا نمرّر معلومات المستخدم:
+            userName: userProfile.botName,
+            bio: userProfile.bio,
+          },
           conversation: [...messages, userMsg],
         }),
       });
@@ -88,7 +121,9 @@ export default function ChatBotIdPage() {
 
         {/* صندوق المحادثة مع عرض الرسائل من الأسفل للأعلى */}
         <div
-          className={`rounded-lg p-4 mb-4 ${darkMode ? "bg-gray-800" : "bg-gray-200"} h-[400px] overflow-y-auto flex flex-col-reverse gap-3`}
+          className={`rounded-lg p-4 mb-4 ${
+            darkMode ? "bg-gray-800" : "bg-gray-200"
+          } h-[400px] overflow-y-auto flex flex-col-reverse gap-3`}
         >
           {messages
             .slice(0)
