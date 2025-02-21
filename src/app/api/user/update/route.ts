@@ -15,12 +15,7 @@ export async function POST(req: Request) {
     }
     const token = tokenMatch[1];
 
-    let decoded;
-    try {
-      decoded = jwt.verify(token, process.env.JWT_SECRET as string);
-    } catch (_err) {
-      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
-    }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
     const userId = (decoded as any).id;
     if (!userId) {
       return NextResponse.json({ error: "Invalid token payload" }, { status: 401 });
@@ -44,9 +39,6 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({ message: "Profile updated successfully", user: updatedUser });
-  } catch (_err) {
-    console.error("Error updating user:", _err);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   } finally {
     await prisma.$disconnect();
   }
