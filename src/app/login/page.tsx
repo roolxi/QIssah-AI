@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { FaArrowLeft } from "react-icons/fa";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -32,12 +33,19 @@ export default function LoginPage() {
       return;
     }
 
-    document.cookie = `token=${data.token}; Path=/; Max-Age=604800; Secure`;
+    // Set cookies with full attributes so they can later be cleared
+    document.cookie = `token=${data.token}; Path=/; Max-Age=604800; Secure; SameSite=None; Domain=qissah-ai.vercel.app`;
+    document.cookie = `username=${encodeURIComponent(data.user.username)}; Path=/; Max-Age=604800; Secure; SameSite=None; Domain=qissah-ai.vercel.app`;
+
     router.push("/");
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
+    <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white relative">
+      {/* Back icon on top left */}
+      <button onClick={() => router.push("/")} className="absolute top-4 left-4 text-white">
+        <FaArrowLeft size={24} />
+      </button>
       <form onSubmit={handleSubmit} className="bg-gray-800 p-6 rounded-lg shadow-lg max-w-md w-full">
         <h2 className="text-2xl font-bold mb-4 text-center">Login</h2>
         {error && <p className="text-red-500 text-center">{error}</p>}
@@ -63,7 +71,7 @@ export default function LoginPage() {
           {loading ? "Logging in..." : "Login"}
         </button>
         <p className="mt-3 text-center">
-          Don&apos;t have an account?{" "}
+          Don't have an account?{" "}
           <Link href="/register" className="text-blue-400 hover:underline">
             Register
           </Link>

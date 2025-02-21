@@ -31,9 +31,9 @@ export default function UserMenu() {
   }, []);
 
   const handleLogout = () => {
-    // Remove cookies for token and username
-    document.cookie = "token=; Path=/; Max-Age=0";
-    document.cookie = "username=; Path=/; Max-Age=0";
+    // Remove cookies using the same attributes
+    document.cookie = "token=; Path=/; Domain=qissah-ai.vercel.app; Max-Age=0; SameSite=None; Secure";
+    document.cookie = "username=; Path=/; Domain=qissah-ai.vercel.app; Max-Age=0; SameSite=None; Secure";
     router.push("/login");
   };
 
@@ -49,16 +49,16 @@ export default function UserMenu() {
         <FaChevronDown className="hidden sm:inline text-current" size={12} />
       </button>
       {isOpen && (
-        <div className="absolute right-0 mt-1 w-40 bg-transparent text-gray-900 dark:text-gray-100">
+        <div className="absolute right-0 mt-1 w-40 bg-white dark:bg-[#0a0a0a] text-gray-900 dark:text-gray-100 rounded-lg shadow-lg z-10">
           <ul className="py-2">
             <li>
-              <Link href="/profile">
-                <a className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600">Profile</a>
+              <Link href="/profile" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600">
+                Profile
               </Link>
             </li>
             <li>
-              <Link href="/settings">
-                <a className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600">Settings</a>
+              <Link href="/settings" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600">
+                Settings
               </Link>
             </li>
             <li>
