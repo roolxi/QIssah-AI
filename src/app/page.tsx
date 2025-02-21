@@ -5,7 +5,6 @@ import Header from "./components/Header";
 import MobileMenu from "./components/MobileMenu";
 import BotCard from "./components/BotCard";
 
-
 export type Bot = {
   id: string;
   name: string;
@@ -41,7 +40,7 @@ export default function HomePage() {
   const handleScroll = () => {
     if (scrollRef.current) {
       const scrollLeft = scrollRef.current.scrollLeft;
-      const cardWidth = window.innerWidth * 0.66;
+      const cardWidth = window.innerWidth * 0.5;
       const newIndex = Math.round(scrollLeft / cardWidth);
       setActiveIndex(newIndex);
     }
@@ -51,7 +50,7 @@ export default function HomePage() {
     <div
       className={`min-h-screen w-full transition-colors duration-500 ${
         darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"
-      }`}
+      } scrollbar-hide overflow-hidden`}
     >
       <Header darkMode={darkMode} toggleTheme={toggleTheme} setMenuOpen={setMenuOpen} />
       <MobileMenu darkMode={darkMode} menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
@@ -69,14 +68,14 @@ export default function HomePage() {
         <div className="relative">
           <div 
             ref={scrollRef} 
-            className="flex space-x-4 overflow-x-auto scrollbar-hide touch-pan-x snap-x snap-mandatory"
-            style={{ WebkitOverflowScrolling: "touch", scrollBehavior: "smooth" }}
+            className="flex space-x-6 overflow-x-auto scrollbar-hide touch-pan-x snap-x snap-mandatory"
+            style={{ WebkitOverflowScrolling: "touch", scrollBehavior: "smooth", paddingLeft: "5vw", paddingRight: "5vw", overflow: "hidden" }}
             onScroll={handleScroll}
           >
             {bots.map((bot, idx) => (
               <motion.div 
                 key={idx} 
-                className="min-w-[70vw] md:min-w-[66vw] snap-start relative"
+                className="min-w-[60vw] md:min-w-[45vw] snap-start relative"
                 animate={{ scale: activeIndex === idx ? 1.1 : 1, boxShadow: activeIndex === idx ? "0px 4px 15px rgba(255, 255, 255, 0.2)" : "none" }}
                 transition={{ duration: 0.3 }}
               >
