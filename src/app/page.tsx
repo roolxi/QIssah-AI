@@ -1,9 +1,10 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import Header from "./components/Header";
 import MobileMenu from "./components/MobileMenu";
 import BotCard from "./components/BotCard";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 // تعريف نوع Bot
 export type Bot = {
@@ -17,6 +18,7 @@ export default function HomePage() {
   const [bots, setBots] = useState<Bot[]>([]);
   const [menuOpen, setMenuOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(true);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
 
   // تبديل الوضع الداكن والفاتح
   const toggleTheme = () => setDarkMode(!darkMode);
@@ -38,6 +40,12 @@ export default function HomePage() {
     fetchBots();
   }, []);
 
+  const scroll = (direction: 'left' | 'right') => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: direction === "left" ? -400 : 400, behavior: "smooth" });
+    }
+  };
+
   return (
     <div
       className={`min-h-screen w-full transition-colors duration-500 ${
@@ -57,10 +65,25 @@ export default function HomePage() {
           اختر قصتك وابدأ مغامرتك التفاعلية
         </motion.h2>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {bots.map((bot, idx) => (
-            <BotCard key={idx} bot={bot} />
-          ))}
+        <div className="relative">
+          {/* أزرار التحكم في التمرير */}
+          <button
+            className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-black/50 p-2 rounded-full z-10"
+            onClick={() => scroll("left")}
+          >
+            <FaChevronLeft className="text-white text-xl" />
+          </button>
+          <div ref={scrollRef} className="flex space-x-4 overflow-x-auto scrollbar-hide">
+            {bots.map((bot, idx) => (
+              <BotCard key={idx} bot={bot} />
+            ))}
+          </div>
+          <button
+            className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-black/50 p-2 rounded-full z-10"
+            onClick={() => scroll("right")}
+          >
+            <FaChevronRight className="text-white text-xl" />
+          </button>
         </div>
       </main>
     </div>
