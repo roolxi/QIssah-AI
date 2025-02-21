@@ -15,7 +15,7 @@ interface BotCardProps {
 
 export default function BotCard({ bot }: BotCardProps) {
   return (
-    <Link href={`/chat/${bot.id}`} className="no-underline min-w-[340px]">
+    <Link href={`/chat/${bot.id}`} className="no-underline min-w-[66vw]">
       <motion.div
         className="relative rounded-2xl overflow-hidden shadow-lg bg-[#212121] flex"
         initial={{ opacity: 0, y: 20 }}
@@ -23,7 +23,7 @@ export default function BotCard({ bot }: BotCardProps) {
         viewport={{ once: true }}
         transition={{ duration: 0.5 }}
         style={{
-          aspectRatio: "640/300", // تصغير العرض قليلاً
+          aspectRatio: "600/300", // ضبط العرض ليظهر بوت ونصف
           margin: "0 auto", 
         }}
       >

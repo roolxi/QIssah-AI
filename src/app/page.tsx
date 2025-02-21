@@ -6,7 +6,6 @@ import MobileMenu from "./components/MobileMenu";
 import BotCard from "./components/BotCard";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
-// تعريف نوع Bot
 export type Bot = {
   id: string;
   name: string;
@@ -20,10 +19,8 @@ export default function HomePage() {
   const [darkMode, setDarkMode] = useState(true);
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
-  // تبديل الوضع الداكن والفاتح
   const toggleTheme = () => setDarkMode(!darkMode);
 
-  // جلب بيانات البوتات من /api/bots
   useEffect(() => {
     const fetchBots = async () => {
       try {
@@ -42,7 +39,7 @@ export default function HomePage() {
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: direction === "left" ? -400 : 400, behavior: "smooth" });
+      scrollRef.current.scrollBy({ left: direction === "left" ? -window.innerWidth * 0.66 : window.innerWidth * 0.66, behavior: "smooth" });
     }
   };
 
@@ -66,7 +63,6 @@ export default function HomePage() {
         </motion.h2>
 
         <div className="relative">
-          {/* أزرار التحكم في التمرير */}
           <button
             className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-black/50 p-2 rounded-full z-10"
             onClick={() => scroll("left")}
@@ -75,7 +71,9 @@ export default function HomePage() {
           </button>
           <div ref={scrollRef} className="flex space-x-4 overflow-x-auto scrollbar-hide">
             {bots.map((bot, idx) => (
-              <BotCard key={idx} bot={bot} />
+              <div key={idx} className="min-w-[66vw]">
+                <BotCard bot={bot} />
+              </div>
             ))}
           </div>
           <button
