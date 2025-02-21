@@ -24,7 +24,7 @@ export default function BotCard({ bot }: BotCardProps) {
         transition={{ duration: 0.5 }}
         style={{
           width: "100%",
-          maxWidth: "400px", /* تقليل الحجم العام أكثر على الهواتف */
+          maxWidth: "350px", /* تصغير الحجم أكثر لرؤية 1.5 بطاقة على iPhone */
           height: "auto",
           aspectRatio: "710/300"
         }}
@@ -44,15 +44,15 @@ export default function BotCard({ bot }: BotCardProps) {
         <div className="absolute inset-0 w-2/3 bg-gradient-to-l from-[#212121] via-[#212121]/80 to-transparent" />
 
         {/* محتوى النص */}
-        <div className="relative w-1/2 p-3 flex flex-col justify-start text-white z-10 ml-auto">
+        <div className="relative w-1/2 p-2 flex flex-col justify-start text-white z-10 ml-auto">
           <div className="flex justify-end mb-1">
             <FaEllipsisV className="text-lg opacity-90" />
           </div>
           <div className="mt-0">
-            <h3 className="text-base font-bold uppercase mb-1">{bot.name}</h3>
-            <p className="text-xs leading-tight font-semibold">{bot.description}</p>
+            <h3 className="text-sm font-bold uppercase mb-1">{bot.name}</h3>
+            <p className="text-[10px] leading-tight font-semibold">{bot.description}</p>
           </div>
-          <div className="flex items-center justify-between text-[9px] mt-auto">
+          <div className="flex items-center justify-between text-[8px] mt-auto">
             <div className="flex items-center gap-1">
               <FaUser className="text-gray-300" />
               <span className="text-blue-400 font-bold">NAX_45549</span>
