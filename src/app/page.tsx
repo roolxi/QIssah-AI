@@ -75,7 +75,7 @@ export default function HomePage() {
           </button>
           <div ref={scrollRef} className="flex space-x-4 overflow-x-auto scrollbar-hide">
             {bots.map((bot, idx) => (
-              <div className="scale-50"> {/* تقليل حجم البطاقة إلى 50% */}
+              <div key={bot.id} className="scale-50"> {/* تقليل حجم البطاقة إلى 50% */}
                 <BotCard key={idx} bot={bot} />
               </div>
             ))}
