@@ -34,8 +34,8 @@ export default function BotCard({ bot }: BotCardProps) {
           />
         </div>
 
-        {/* التدرج الداكن فوق الصورة، مع زيادة السماكة */}
-        <div className="absolute inset-0 w-3/5 bg-gradient-to-l from-[#212121] via-[#212121] to-transparent" />
+        {/* التدرج الداكن فوق الصورة، مع تقليل كثافته وتمديد طوله */}
+        <div className="absolute inset-0 w-2/3 bg-gradient-to-l from-[#212121] via-[#212121]/80 to-transparent" />
 
         {/* محتوى النص */}
         <div className="relative w-1/2 p-6 flex flex-col justify-start text-white z-10 ml-auto">
