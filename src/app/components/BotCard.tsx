@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { FaUser, FaEye, FaHeart, FaEllipsisV } from "react-icons/fa";
+import { useRef } from "react";
 
 interface BotCardProps {
   bot: {
@@ -15,7 +16,7 @@ interface BotCardProps {
 
 export default function BotCard({ bot }: BotCardProps) {
   return (
-    <Link href={`/chat/${bot.id}`} className="no-underline">
+    <Link href={`/chat/${bot.id}`} className="no-underline min-w-[380px]">
       <motion.div
         className="relative rounded-2xl overflow-hidden shadow-lg bg-[#212121] flex"
         initial={{ opacity: 0, y: 20 }}
@@ -23,9 +24,6 @@ export default function BotCard({ bot }: BotCardProps) {
         viewport={{ once: true }}
         transition={{ duration: 0.5 }}
         style={{
-          width: "100%",
-          maxWidth: "380px", /* تصغير الحجم أكثر لرؤية 1.75 بطاقة أفقياً */
-          height: "auto",
           aspectRatio: "710/300",
           margin: "0 auto", /* ضبط التوسيط */
         }}
