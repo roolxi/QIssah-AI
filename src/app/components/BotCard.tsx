@@ -23,8 +23,8 @@ export default function BotCard({ bot }: BotCardProps) {
         viewport={{ once: true }}
         transition={{ duration: 0.5 }}
       >
-        {/* صورة الخلفية */}
-        <div className="absolute inset-0">
+        {/* صورة الخلفية على الجانب الأيسر */}
+        <div className="w-1/2 h-full relative">
           <Image
             src={bot.image}
             alt={bot.name}
@@ -32,9 +32,10 @@ export default function BotCard({ bot }: BotCardProps) {
             objectFit="cover"
             className="absolute inset-0"
           />
-          {/* التدرج الداكن فوق الصورة */}
-          <div className="absolute inset-0 bg-gradient-to-l from-black via-black/80 to-transparent" />
         </div>
+
+        {/* التدرج الداكن فوق الصورة، مع زيادة سماكته */}
+        <div className="absolute inset-0 w-3/5 bg-gradient-to-l from-black via-black/90 to-transparent" />
 
         {/* محتوى النص */}
         <div className="relative w-1/2 p-6 flex flex-col justify-between text-white z-10 ml-auto">
