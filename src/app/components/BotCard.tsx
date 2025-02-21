@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { FaUser, FaEye, FaHeart, FaEllipsisV } from "react-icons/fa";
-import { useRef } from "react";
 
 interface BotCardProps {
   bot: {
