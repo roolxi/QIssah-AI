@@ -2,10 +2,8 @@
 import React, { useState, useEffect } from "react";
 import Header from "@/app/components/Header";
 import MobileMenu from "@/app/components/MobileMenu";
-import { useRouter } from "next/navigation";
 
 export default function ProfilePage() {
-  const router = useRouter();
   const [profile, setProfile] = useState({
     email: "",
     botName: "",

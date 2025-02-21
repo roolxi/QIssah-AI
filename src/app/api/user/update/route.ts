@@ -1,13 +1,9 @@
 import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import jwt from "jsonwebtoken"; // تأكد إن هالسطر موجود
 
 const prisma = new PrismaClient();
-const SECRET_KEY = process.env.JWT_SECRET;
-if (!SECRET_KEY) {
-  throw new Error("JWT_SECRET is not defined in environment variables");
-}
 
 export async function POST(req: Request) {
   try {
@@ -21,8 +17,8 @@ export async function POST(req: Request) {
 
     let decoded;
     try {
-      decoded = jwt.verify(token, SECRET_KEY as string);
-    } catch (error) {
+      decoded = jwt.verify(token, process.env.JWT_SECRET as string);
+    } catch (err) {
       return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
     const userId = (decoded as any).id;
@@ -36,7 +32,7 @@ export async function POST(req: Request) {
     // بناء كائن التحديث
     const updateData: { email?: string; username?: string; bio?: string; password?: string } = {};
     if (email) updateData.email = email;
-    if (botName) updateData.username = botName; // هنا نستخدم botName لتحديث حقل username
+    if (botName) updateData.username = botName;
     if (bio) updateData.bio = bio;
     if (password) {
       updateData.password = await bcrypt.hash(password, 10);
@@ -48,8 +44,8 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({ message: "Profile updated successfully", user: updatedUser });
-  } catch (error) {
-    console.error("Error updating user:", error);
+  } catch (err) {
+    console.error("Error updating user:", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   } finally {
     await prisma.$disconnect();

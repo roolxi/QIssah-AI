@@ -4,6 +4,8 @@ const MODEL_ID = "gemini-2.0-flash"; // النموذج المستخدم
 interface Bot {
   personality: string;
   accent?: string;
+  userName?: string; // الاسم اللي يستخدمه البوت لمناداتك (من الإعدادات)
+  bio?: string;      // السيرة الذاتية أو المعلومات الإضافية للمستخدم
 }
 
 interface GeminiResponse {
@@ -17,11 +19,7 @@ export async function getBotResponse(bot: Bot, message: string) {
 
   const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_ID}:generateContent?key=${API_KEY}`;
 
-  // تعليمات جديدة:
-  // 1. اكتب الرد بصيغة المتكلم (أنا).
-  // 2. إذا كنت توصف مشاعرك أو أفعالك أو البيئة، ضعها في سطر منفصل واجعلها بخط مائل (italic).
-  // 3. إذا كنت تتحدث مباشرة إلى المستخدم، اكتب النص بسطر عادي.
-  // 4. يكون الرد بين 50 إلى 100 كلمة.
+  // تحديث الـ prompt مع إضافة معلومات المستخدم (الاسم والسيرة الذاتية)
   const prompt = `تعليمات:
 - اكتب الرد بصيغة المتكلم (أنا).
 - إذا كنت توصف مشاعرك أو أفعالك أو البيئة، ضعها في سطر منفصل واجعلها بخط مائل (italic).
@@ -30,6 +28,8 @@ export async function getBotResponse(bot: Bot, message: string) {
 
 الشخصية: ${bot.personality}
 اللهجة: ${bot.accent || "سعودية"}
+اسم المستخدم: ${bot.userName || "المستخدم"}
+السيرة الذاتية: ${bot.bio || "لا توجد معلومات إضافية"}
 
 المستخدم: ${message}
 البوت:`;

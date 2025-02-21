@@ -33,7 +33,7 @@ export default function LoginPage() {
       return;
     }
 
-    // Set cookies with full attributes so they can later be cleared
+    // Set cookies with full attributes
     document.cookie = `token=${data.token}; Path=/; Max-Age=604800; Secure; SameSite=None; Domain=qissah-ai.vercel.app`;
     document.cookie = `username=${encodeURIComponent(data.user.username)}; Path=/; Max-Age=604800; Secure; SameSite=None; Domain=qissah-ai.vercel.app`;
 
@@ -71,7 +71,7 @@ export default function LoginPage() {
           {loading ? "Logging in..." : "Login"}
         </button>
         <p className="mt-3 text-center">
-          Don't have an account?{" "}
+          Don&apos;t have an account?{" "}
           <Link href="/register" className="text-blue-400 hover:underline">
             Register
           </Link>
