@@ -1,6 +1,8 @@
 "use client";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
+import { FaUser, FaEye, FaHeart } from "react-icons/fa";
 
 interface BotCardProps {
   bot: {
@@ -10,46 +12,59 @@ interface BotCardProps {
     image: string;
   };
   darkMode: boolean;
-  handleStartStory: (bot: {
-    id: string;
-    name: string;
-    description: string;
-    image: string;
-  }) => void;
 }
 
-export default function BotCard({ bot, darkMode, handleStartStory }: BotCardProps) {
+export default function BotCard({ bot, darkMode }: BotCardProps) {
   return (
-    <motion.div
-      className={`rounded-xl shadow-lg hover:shadow-2xl transition-shadow overflow-hidden ${
-        darkMode ? "bg-gray-800 hover:bg-gray-750" : "bg-white hover:bg-gray-50"
-      }`}
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5 }}
-    >
-      <Image 
-        src={bot.image} 
-        alt={bot.name} 
-        width={500} 
-        height={160} 
-        className="w-full h-40 object-cover"
-      />
-      <div className="p-4">
-        <h3 className="text-xl font-bold mb-3 text-red-500">{bot.name}</h3>
-        <p className="text-sm leading-relaxed mb-4 opacity-90">{bot.description}</p>
-        <button
-          onClick={() => handleStartStory(bot)}
-          className={`w-full py-2 rounded-lg font-medium transition-all ${
-            darkMode
-              ? "bg-red-700 hover:bg-red-600 text-white"
-              : "bg-red-500 hover:bg-red-600 text-white"
-          }`}
-        >
-          ابدأ الرحلة ➔
-        </button>
-      </div>
-    </motion.div>
+    <Link href={`/chat/${bot.id}`} className="no-underline">
+      <motion.div
+        className="w-full max-w-4xl h-48 flex overflow-hidden rounded-lg shadow-lg hover:shadow-2xl transition-shadow bg-gray-800 cursor-pointer"
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+      >
+        {/* الجزء الأيسر: صورة البوت */}
+        <div className="relative w-2/5 h-full">
+          <Image
+            src={bot.image}
+            alt={bot.name}
+            fill
+            className="object-cover"
+          />
+        </div>
+
+        {/* الجزء الأيمن: معلومات البوت */}
+        <div className="w-3/5 h-full p-4 flex flex-col justify-between text-white">
+          {/* اسم البوت الكبير + الوصف */}
+          <div>
+            <h3 className="text-2xl font-bold mb-2 uppercase">{bot.name}</h3>
+            <p className="text-sm leading-relaxed mb-3 opacity-90">
+              {bot.description}
+            </p>
+          </div>
+
+          {/* معلومات المنشئ (اسم المستخدم) + المشاهدات + الإعجابات */}
+          <div className="flex items-center justify-between">
+            {/* المنشئ (اسم تخيلي) */}
+            <div className="flex items-center gap-1">
+              <FaUser className="text-gray-400" />
+              <span className="text-blue-400 text-sm">NAX_45549</span>
+            </div>
+            {/* المشاهدات والإعجابات */}
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-1">
+                <FaEye className="text-gray-400" />
+                <span className="text-sm">35.7K</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <FaHeart className="text-red-500" />
+                <span className="text-sm">1.6K</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    </Link>
   );
 }
