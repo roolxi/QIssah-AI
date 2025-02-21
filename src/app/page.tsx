@@ -40,6 +40,7 @@ export default function HomePage() {
       className={`min-h-screen w-full transition-colors duration-500 ${
         darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"
       } scrollbar-hide overflow-hidden`}
+      style={{ overflow: "hidden" }}
     >
       <Header darkMode={darkMode} toggleTheme={toggleTheme} setMenuOpen={setMenuOpen} />
       <MobileMenu darkMode={darkMode} menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
@@ -53,7 +54,14 @@ export default function HomePage() {
           <div 
             ref={scrollRef} 
             className="flex space-x-4 overflow-x-auto scrollbar-hide touch-pan-x"
-            style={{ WebkitOverflowScrolling: "touch", scrollBehavior: "smooth", paddingLeft: "5vw", paddingRight: "5vw" }}
+            style={{
+              WebkitOverflowScrolling: "touch", 
+              scrollBehavior: "smooth", 
+              paddingLeft: "0px", 
+              paddingRight: "0px", 
+              overflowX: "hidden", 
+              overflowY: "hidden"
+            }}
           >
             {bots.map((bot, idx) => (
               <div key={idx} className="min-w-[50vw] md:min-w-[33vw]">
