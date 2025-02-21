@@ -10,11 +10,10 @@ interface BotCardProps {
     name: string;
     description: string;
     image: string;
-  };// eslint-disable-next-line @typescript-eslint/no-unused-vars
-  darkMode: boolean;
+  };
 }
 
-export default function BotCard({ bot, darkMode }: BotCardProps) {
+export default function BotCard({ bot }: BotCardProps) {
   return (
     <Link href={`/chat/${bot.id}`} className="no-underline">
       <motion.div
@@ -44,14 +43,12 @@ export default function BotCard({ bot, darkMode }: BotCardProps) {
             </p>
           </div>
 
-          {/* معلومات المنشئ (اسم المستخدم) + المشاهدات + الإعجابات */}
+          {/* معلومات المنشئ (اسم تخيلي) + المشاهدات والإعجابات */}
           <div className="flex items-center justify-between">
-            {/* المنشئ (اسم تخيلي) */}
             <div className="flex items-center gap-1">
               <FaUser className="text-gray-400" />
               <span className="text-blue-400 text-sm">NAX_45549</span>
             </div>
-            {/* المشاهدات والإعجابات */}
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-1">
                 <FaEye className="text-gray-400" />
