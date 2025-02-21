@@ -40,24 +40,28 @@ export default function HomePage() {
       className={`min-h-screen w-full transition-colors duration-500 ${
         darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"
       } scrollbar-hide`}
+      style={{ overflow: "hidden" }}
     >
       <Header darkMode={darkMode} toggleTheme={toggleTheme} setMenuOpen={setMenuOpen} />
       <MobileMenu darkMode={darkMode} menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
 
-      <main className="px-6 py-12"> {/* زيادة التباعد العلوي والسفلي */}
-        <h2 className="text-xl md:text-2xl font-semibold mb-6">
+      <main className="px-6 py-16"> {/* زيادة المساحة العلوية والسفلية */}
+        <h2 className="text-xl md:text-2xl font-semibold mb-8">
           اختر قصتك وابدأ مغامرتك التفاعلية
         </h2>
 
-        <div className="relative py-4"> {/* زيادة التباعد العلوي والسفلي حول القائمة */}
+        <div className="relative pb-6"> {/* إضافة هامش سفلي لضمان وضوح البطاقة بالكامل */}
           <div 
             ref={scrollRef} 
-            className="flex space-x-4 overflow-x-auto scrollbar-hide touch-pan-x py-2"
+            className="flex space-x-4 overflow-x-auto scrollbar-hide touch-pan-x pb-4"
             style={{
               WebkitOverflowScrolling: "touch", 
               scrollBehavior: "smooth", 
               paddingLeft: "0px", 
-              paddingRight: "0px"
+              paddingRight: "0px", 
+              overflowX: "auto", /* السماح بالسحب بدون ظهور الشريط */
+              scrollbarWidth: "none", /* إخفاء شريط التمرير */
+              msOverflowStyle: "none"
             }}
           >
             {bots.map((bot, idx) => (
@@ -68,6 +72,13 @@ export default function HomePage() {
           </div>
         </div>
       </main>
+
+      {/* CSS إضافي لإخفاء شريط التمرير */}
+      <style jsx>{`
+        ::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
     </div>
   );
 }
