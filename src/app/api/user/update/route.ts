@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
   try {
-    // استخراج الكوكي من الهيدر
+    // استخراج التوكن من الكوكيز
     const cookieHeader = req.headers.get("cookie") || "";
     const tokenMatch = cookieHeader.match(/(?:^|;\s*)token=([^;]+)/);
     if (!tokenMatch) {
@@ -15,7 +15,12 @@ export async function POST(req: Request) {
     }
     const token = tokenMatch[1];
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET as string);
+    } catch {
+      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+    }
     const userId = (decoded as any).id;
     if (!userId) {
       return NextResponse.json({ error: "Invalid token payload" }, { status: 401 });
@@ -24,10 +29,10 @@ export async function POST(req: Request) {
     // قراءة بيانات التحديث من جسم الطلب
     const { email, botName, bio, password } = await req.json();
 
-    // بناء كائن التحديث
-    const updateData: { email?: string; username?: string; bio?: string; password?: string } = {};
+    // بناء كائن التحديث بحيث يحدث الحقل botName بدلاً من username
+    const updateData: { email?: string; botName?: string; bio?: string; password?: string } = {};
     if (email) updateData.email = email;
-    if (botName) updateData.username = botName;
+    if (botName) updateData.botName = botName; // هنا يتم تحديث حقل botName
     if (bio) updateData.bio = bio;
     if (password) {
       updateData.password = await bcrypt.hash(password, 10);
@@ -39,6 +44,9 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({ message: "Profile updated successfully", user: updatedUser });
+  } catch (error) {
+    console.error("Error updating user:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   } finally {
     await prisma.$disconnect();
   }
