@@ -1,6 +1,5 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Header from "./components/Header";
 import MobileMenu from "./components/MobileMenu";
@@ -18,7 +17,6 @@ export default function HomePage() {
   const [bots, setBots] = useState<Bot[]>([]);
   const [menuOpen, setMenuOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(true);
-  const router = useRouter();
 
   // تبديل الوضع الداكن والفاتح
   const toggleTheme = () => setDarkMode(!darkMode);
