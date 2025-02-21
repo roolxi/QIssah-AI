@@ -4,6 +4,7 @@ import AuthButton from "./AuthButton";
 import UserMenu from "./UserMenu";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link"; // نستخدمه لجعل الصورة قابلة للضغط
 
 interface HeaderProps {
   darkMode: boolean;
@@ -25,10 +26,19 @@ export default function Header({ darkMode, toggleTheme, setMenuOpen }: HeaderPro
         darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"
       }`}
     >
-      {/* استبدل النص بالصورة: تأكد إن الصورة موجودة في مجلد public (مثلاً public/logo.png) */}
-      <div className="flex items-center">
-        <Image src="/logo.png" alt="Logo" width={50} height={50} />
-      </div>
+      {/* نلف الصورة بـ Link لجعلها قابلة للضغط */}
+      <Link href="/">
+        {/* Image من Next.js مع عرض/ارتفاع أكبر، مثلاً 80x80 */}
+        <Image
+          src="/logo.png"
+          alt="Logo"
+          width={80}
+          height={80}
+          className="cursor-pointer"
+          priority
+        />
+      </Link>
+
       <div className="flex items-center gap-4">
         <button onClick={toggleTheme} className="text-xl">
           {darkMode ? <FaSun /> : <FaMoon />}
