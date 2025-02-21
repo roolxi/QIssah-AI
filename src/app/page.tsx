@@ -39,17 +39,17 @@ export default function HomePage() {
     <div
       className={`min-h-screen w-full transition-colors duration-500 ${
         darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"
-      } scrollbar-hide flex flex-col justify-center items-center`} /* تكبير الحاوية الخارجية فقط */
+      } scrollbar-hide`}
     >
       <Header darkMode={darkMode} toggleTheme={toggleTheme} setMenuOpen={setMenuOpen} />
       <MobileMenu darkMode={darkMode} menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
 
-      <main className="px-6 py-8 w-full max-w-screen-xl flex flex-col justify-center items-center"> 
-        <h2 className="text-xl md:text-2xl font-semibold mb-6 text-center">
+      <main className="px-6 py-8"> 
+        <h2 className="text-xl md:text-2xl font-semibold mb-6">
           اختر قصتك وابدأ مغامرتك التفاعلية
         </h2>
 
-        <div className="relative w-full max-w-screen-lg py-10"> {/* تكبير الحاوية الخارجية فقط */}
+        <div className="relative" style={{ paddingTop: "30px", paddingBottom: "30px" }}> {/* تكبير المساحة حول القائمة */}
           <div 
             ref={scrollRef} 
             className="flex space-x-4 overflow-x-auto scrollbar-hide touch-pan-x"
@@ -64,7 +64,7 @@ export default function HomePage() {
             }}
           >
             {bots.map((bot, idx) => (
-              <div key={idx} className="min-w-[50vw] md:min-w-[33vw]">
+              <div key={idx} className="min-w-[50vw] md:min-w-[33vw]" style={{ paddingTop: "10px", paddingBottom: "10px" }}> {/* إضافة مساحة داخلية */}
                 <BotCard bot={bot} />
               </div>
             ))}
