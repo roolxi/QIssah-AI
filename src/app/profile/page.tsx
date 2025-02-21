@@ -2,10 +2,8 @@
 import React, { useState, useEffect } from "react";
 import Header from "@/app/components/Header";
 import MobileMenu from "@/app/components/MobileMenu";
-import { useRouter } from "next/navigation";
 
 export default function ProfilePage() {
-  const router = useRouter();
   const [profile, setProfile] = useState({
     email: "",
     botName: "",
@@ -55,7 +53,7 @@ export default function ProfilePage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email: profile.email,
-          botName: profile.botName, // هذا الحقل سيحدث botName في قاعدة البيانات
+          botName: profile.botName, // يتم تحديث حقل botName هنا فقط
           bio: profile.bio,
           ...(password && { password }), // إذا أدخلت كلمة مرور جديدة
         }),
