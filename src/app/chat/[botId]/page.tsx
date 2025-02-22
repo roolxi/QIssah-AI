@@ -1,10 +1,8 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "next/navigation";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import { motion } from "framer-motion";
-import { FaPaperPlane, FaBars, FaEllipsisV } from "react-icons/fa";
+import { FaPaperPlane } from "react-icons/fa";
 import Header from "@/app/components/Header";
 import MobileMenu from "@/app/components/MobileMenu";
 
