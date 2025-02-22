@@ -47,7 +47,8 @@ export default function HomePage() {
     <div
       className={`min-h-screen w-full transition-colors duration-500 ${
         darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"
-      }`}
+      } scrollbar-hide`} /* إخفاء السكروبار العمودي */
+      style={{ overflowY: "hidden" }}
     >
       <Header darkMode={darkMode} toggleTheme={toggleTheme} setMenuOpen={setMenuOpen} />
       <MobileMenu darkMode={darkMode} menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
@@ -69,7 +70,17 @@ export default function HomePage() {
           >
             <FaChevronLeft className="text-white text-xl" />
           </button>
-          <div ref={scrollRef} className="flex space-x-4 overflow-x-auto scrollbar-hide">
+          <div 
+            ref={scrollRef} 
+            className="flex space-x-4 overflow-x-auto scrollbar-hide" 
+            style={{
+              WebkitOverflowScrolling: "touch", 
+              scrollBehavior: "smooth", 
+              overflowX: "auto", /* إخفاء شريط التمرير الأفقي */
+              scrollbarWidth: "none", 
+              msOverflowStyle: "none"
+            }}
+          >
             {bots.map((bot, idx) => (
               <div key={idx} className="min-w-[66vw]">
                 <BotCard bot={bot} />
@@ -84,6 +95,13 @@ export default function HomePage() {
           </button>
         </div>
       </main>
+
+      {/* CSS إضافي لإخفاء شريط التمرير */}
+      <style jsx>{`
+        ::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
     </div>
   );
 }
