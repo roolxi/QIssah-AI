@@ -40,7 +40,7 @@ export default function HomePage() {
   return (
     <div
       className={`min-h-screen w-full transition-colors duration-500 ${
-        darkMode ? "bg-gradient-to-br from-[#D8BFD8] to-[#4B0082]" : "bg-gray-100 text-gray-900"
+        darkMode ? "bg-gradient-to-br from-[#5f35aa] to-[#212121]" : "bg-gray-100 text-gray-900"
       } scrollbar-hide`}
       style={{ overflowY: "hidden" }}
     >
