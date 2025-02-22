@@ -1,9 +1,12 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
+import { motion } from "framer-motion";
 import Header from "./components/Header";
 import MobileMenu from "./components/MobileMenu";
 import BotCard from "./components/BotCard";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
+// تعريف نوع Bot
 export type Bot = {
   id: string;
   name: string;
@@ -17,14 +20,16 @@ export default function HomePage() {
   const [darkMode, setDarkMode] = useState(true);
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
+  // تبديل الوضع الداكن والفاتح
   const toggleTheme = () => setDarkMode(!darkMode);
 
+  // جلب بيانات البوتات من /api/bots
   useEffect(() => {
     const fetchBots = async () => {
       try {
         const response = await fetch("/api/bots");
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          throw new Error(HTTP error! status: ${response.status});
         }
         const data = await response.json();
         setBots(data);
@@ -35,48 +40,52 @@ export default function HomePage() {
     fetchBots();
   }, []);
 
+  const scroll = (direction: 'left' | 'right') => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: direction === "left" ? -400 : 400, behavior: "smooth" });
+    }
+  };
+
   return (
     <div
-      className={`min-h-screen w-full transition-colors duration-500 ${
+      className={min-h-screen w-full transition-colors duration-500 ${
         darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"
-      } scrollbar-hide`}
+      }}
     >
       <Header darkMode={darkMode} toggleTheme={toggleTheme} setMenuOpen={setMenuOpen} />
       <MobileMenu darkMode={darkMode} menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
 
-      <main className="px-6 py-8"> 
-        <h2 className="text-xl md:text-2xl font-semibold mb-6">
+      <main className="px-6 py-8">
+        <motion.h2
+          className="text-xl md:text-2xl font-semibold mb-4"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7 }}
+        >
           اختر قصتك وابدأ مغامرتك التفاعلية
-        </h2>
+        </motion.h2>
 
-        <div className="relative w-full flex justify-center" style={{ paddingTop: "50px" }}> 
-          <div 
-            ref={scrollRef} 
-            className="flex space-x-4 overflow-x-auto scrollbar-hide touch-pan-x justify-center"
-            style={{
-              WebkitOverflowScrolling: "touch", 
-              scrollBehavior: "smooth", 
-              paddingLeft: "0px", 
-              paddingRight: "0px", 
-              overflowX: "auto", 
-              scrollbarWidth: "none", 
-              msOverflowStyle: "none"
-            }}
+        <div className="relative">
+          {/* أزرار التحكم في التمرير */}
+          <button
+            className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-black/50 p-2 rounded-full z-10"
+            onClick={() => scroll("left")}
           >
+            <FaChevronLeft className="text-white text-xl" />
+          </button>
+          <div ref={scrollRef} className="flex space-x-4 overflow-x-auto scrollbar-hide">
             {bots.map((bot, idx) => (
-              <div key={idx} className="min-w-[50vw] md:min-w-[33vw]"> 
-                <BotCard bot={bot} />
-              </div>
+              <BotCard key={idx} bot={bot} />
             ))}
           </div>
+          <button
+            className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-black/50 p-2 rounded-full z-10"
+            onClick={() => scroll("right")}
+          >
+            <FaChevronRight className="text-white text-xl" />
+          </button>
         </div>
       </main>
-
-      <style jsx>{`
-        ::-webkit-scrollbar {
-          display: none;
-        }
-      `}</style>
     </div>
   );
 }
