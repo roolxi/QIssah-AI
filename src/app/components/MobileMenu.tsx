@@ -3,12 +3,11 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 
 interface MobileMenuProps {
-  darkMode: boolean;
   menuOpen: boolean;
   setMenuOpen: (open: boolean) => void;
 }
 
-export default function MobileMenu({ darkMode, menuOpen, setMenuOpen }: MobileMenuProps) {
+export default function MobileMenu({ menuOpen, setMenuOpen }: MobileMenuProps) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
