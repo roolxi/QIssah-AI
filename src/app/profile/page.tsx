@@ -74,8 +74,8 @@ export default function ProfilePage() {
 
   return (
     <div className={`min-h-screen w-full transition-colors duration-500 ${darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"}`}>
-      <Header darkMode={darkMode} toggleTheme={() => setDarkMode(!darkMode)} setMenuOpen={setMenuOpen} />
-      <MobileMenu darkMode={darkMode} menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
+      <Header darkMode={darkMode} toggleTheme={() => setDarkMode(!darkMode)}  />
+      <MobileMenu  menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
       <main className="max-w-3xl mx-auto p-4">
         <h1 className="text-3xl font-bold mb-4">البروفايل</h1>
         {error && <p className="text-red-500 mb-4">{error}</p>}
