@@ -1,9 +1,9 @@
 "use client";
-import { FaMoon, FaSun, FaBars } from "react-icons/fa";
+import { FaMoon, FaSun } from "react-icons/fa";
 import AuthButton from "./AuthButton";
 import UserMenu from "./UserMenu";
+import DropdownMenu from "./DropdownMenu"; // New component
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 
 interface HeaderProps {
@@ -16,28 +16,17 @@ export default function Header({ darkMode, toggleTheme, setMenuOpen }: HeaderPro
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    // فحص وجود التوكن في الكوكيز
     setIsLoggedIn(document.cookie.includes("token="));
   }, []);
 
   return (
     <header
-      className={`flex items-center justify-between h-16 px-4 ${
-        darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"
-      }`}
+      className={`flex items-center justify-between h-16 px-4 bg-gradient-to-br from-[#D8BFD8] to-[#4B0082] text-white`}
       style={{ minHeight: "4rem" }}
     >
-      {/* الشعار مع تكبير الحجم */}
-      <Link href="/" className="flex items-center">
-        <Image
-          src="/logo.png"
-          alt="Logo"
-          // يمكنك تغيير هذه الأرقام لتكبير/تصغير الشعار
-          width={64}
-          height={64}
-          priority
-          className="cursor-pointer object-contain w-16 h-16"
-        />
+      {/* New Text-based Logo */}
+      <Link href="/" className="flex items-center justify-center flex-grow">
+        <h1 className="text-2xl font-bold uppercase">QISSAAH.AI</h1>
       </Link>
 
       <div className="flex items-center gap-4">
@@ -45,9 +34,7 @@ export default function Header({ darkMode, toggleTheme, setMenuOpen }: HeaderPro
           {darkMode ? <FaSun /> : <FaMoon />}
         </button>
         {isLoggedIn ? <UserMenu /> : <AuthButton />}
-        <button onClick={() => setMenuOpen((prev) => !prev)} className="text-xl">
-          <FaBars />
-        </button>
+        <DropdownMenu />
       </div>
     </header>
   );

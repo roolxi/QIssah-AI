@@ -1,9 +1,11 @@
+// src/app/page.tsx
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import Header from "./components/Header";
-import MobileMenu from "./components/MobileMenu";
-import BotCard from "./components/BotCard";
+import Header from "@/app/components/Header";
+import MobileMenu from "@/app/components/MobileMenu";
+import BotCard from "@/app/components/BotCard";
+import BottomNavBar from "@/app/components/BottomNavBar";
 
 export type Bot = {
   id: string;
@@ -38,15 +40,12 @@ export default function HomePage() {
   return (
     <div
       className={`min-h-screen w-full transition-colors duration-500 ${
-        darkMode ? "bg-[#301970] text-white" : "bg-gray-100 text-gray-900"
+        darkMode ? "bg-gradient-to-br from-[#D8BFD8] to-[#4B0082]" : "bg-gray-100 text-gray-900"
       } scrollbar-hide`}
       style={{ overflowY: "hidden" }}
     >
-      {/* Header is handled by the existing component */}
       <Header darkMode={darkMode} toggleTheme={toggleTheme} setMenuOpen={setMenuOpen} />
       <MobileMenu darkMode={darkMode} menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
-
-      {/* Main content matching the photo */}
       <main className="px-6 py-8">
         <motion.h2
           className="text-xl md:text-2xl font-semibold mb-4 text-white"
@@ -77,10 +76,7 @@ export default function HomePage() {
           </div>
         </div>
       </main>
-
-      {/* No bottom menu as per your request */}
-
-      {/* Hide scrollbar for a clean look */}
+      <BottomNavBar />
       <style jsx>{`
         ::-webkit-scrollbar {
           display: none;

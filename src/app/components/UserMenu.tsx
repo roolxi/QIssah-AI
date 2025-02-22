@@ -11,13 +11,8 @@ export default function UserMenu() {
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Retrieve and decode the username cookie
     const match = document.cookie.match(/(?:^|;\s*)username=([^;]+)/);
-    if (match && match[1]) {
-      setUsername(decodeURIComponent(match[1]));
-    } else {
-      setUsername("User");
-    }
+    setUsername(match && match[1] ? decodeURIComponent(match[1]) : "User");
   }, []);
 
   useEffect(() => {
@@ -31,7 +26,6 @@ export default function UserMenu() {
   }, []);
 
   const handleLogout = () => {
-    // Remove cookies using the same domain, path, samesite, and secure
     document.cookie = "token=; Path=/; Domain=qissah-ai.vercel.app; Max-Age=0; SameSite=None; Secure";
     document.cookie = "username=; Path=/; Domain=qissah-ai.vercel.app; Max-Age=0; SameSite=None; Secure";
     router.push("/login");
@@ -41,22 +35,22 @@ export default function UserMenu() {
     <div className="relative" ref={menuRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 p-2 rounded transition-all hover:bg-gray-200 dark:hover:bg-gray-700"
+        className="flex items-center gap-2 p-2 rounded transition-all hover:bg-gray-200/30"
       >
-        <span className="hidden sm:inline text-current">{username}</span>
-        <FaUserCircle className="text-current" size={24} />
-        <FaChevronDown className="hidden sm:inline text-current" size={12} />
+        <span className="hidden sm:inline text-white">{username}</span>
+        <FaUserCircle className="text-white" size={24} />
+        <FaChevronDown className="hidden sm:inline text-white" size={12} />
       </button>
       {isOpen && (
-        <div className="absolute right-0 mt-1 w-40 bg-white dark:bg-[#0a0a0a] text-gray-900 dark:text-gray-100 rounded-lg shadow-lg z-10">
+        <div className="absolute right-0 mt-1 w-40 bg-[#212121] text-white rounded-lg shadow-lg z-10">
           <ul className="py-2">
             <li>
-              <Link href="/profile" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600">
+              <Link href="/profile" className="block px-4 py-2 hover:bg-gray-600">
                 Profile
               </Link>
             </li>
             <li>
-              <button onClick={handleLogout} className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600">
+              <button onClick={handleLogout} className="w-full text-left px-4 py-2 hover:bg-gray-600">
                 Log out
               </button>
             </li>

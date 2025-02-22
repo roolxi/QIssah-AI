@@ -2,7 +2,8 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { FaUser, FaEye, FaHeart, FaEllipsisV } from "react-icons/fa";
+import { FaUser, FaEye, FaHeart } from "react-icons/fa";
+import DropdownMenu from "./DropdownMenu"; // New component
 
 interface BotCardProps {
   bot: {
@@ -23,11 +24,11 @@ export default function BotCard({ bot }: BotCardProps) {
         viewport={{ once: true }}
         transition={{ duration: 0.5 }}
         style={{
-          aspectRatio: "640/300", // تصغير العرض قليلاً
-          margin: "0 auto", 
+          aspectRatio: "640/300",
+          margin: "0 auto",
         }}
       >
-        {/* صورة الخلفية */}
+        {/* Background Image */}
         <div className="w-[45%] h-full relative">
           <Image
             src={bot.image}
@@ -38,13 +39,13 @@ export default function BotCard({ bot }: BotCardProps) {
           />
         </div>
 
-        {/* التدرج الداكن فوق الصورة */}
+        {/* Gradient Overlay */}
         <div className="absolute inset-0 w-2/3 bg-gradient-to-l from-[#212121] via-[#212121]/80 to-transparent" />
 
-        {/* المحتوى النصي */}
+        {/* Text Content */}
         <div className="relative w-[55%] p-2 flex flex-col justify-start text-white z-10 ml-auto">
           <div className="flex justify-end mb-1">
-            <FaEllipsisV className="text-base opacity-90" />
+            <DropdownMenu />
           </div>
           <div>
             <h3 className="text-sm font-bold uppercase mb-1">{bot.name}</h3>
