@@ -37,19 +37,19 @@ export default function HomePage() {
 
   return (
     <div
-      className={`min-h-screen w-full transition-colors duration-500 ${
+      className={`min-h-screen w-full flex flex-col justify-center transition-colors duration-500 ${
         darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"
       } scrollbar-hide`}
     >
       <Header darkMode={darkMode} toggleTheme={toggleTheme} setMenuOpen={setMenuOpen} />
       <MobileMenu darkMode={darkMode} menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
 
-      <main className="px-6 py-8"> 
+      <main className="px-6 py-8 flex flex-col justify-center items-center"> 
         <h2 className="text-xl md:text-2xl font-semibold mb-6">
           اختر قصتك وابدأ مغامرتك التفاعلية
         </h2>
 
-        <div className="relative" style={{ paddingTop: "20px", paddingBottom: "20px" }}> 
+        <div className="relative w-full" style={{ paddingTop: "50px" }}> 
           <div 
             ref={scrollRef} 
             className="flex space-x-4 overflow-x-auto scrollbar-hide touch-pan-x"
@@ -64,7 +64,7 @@ export default function HomePage() {
             }}
           >
             {bots.map((bot, idx) => (
-              <div key={idx} className="min-w-[50vw] md:min-w-[33vw] transform scale-95"> 
+              <div key={idx} className="min-w-[50vw] md:min-w-[33vw]"> 
                 <BotCard bot={bot} />
               </div>
             ))}
