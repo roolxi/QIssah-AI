@@ -112,8 +112,8 @@ export default function ChatBotIdPage() {
         darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"
       }`}
     >
-      <Header darkMode={darkMode} toggleTheme={() => setDarkMode(!darkMode)} setMenuOpen={setMenuOpen} />
-      <MobileMenu darkMode={darkMode} menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
+      <Header darkMode={darkMode} toggleTheme={() => setDarkMode(!darkMode)}  />
+      <MobileMenu  menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
 
       <main className="max-w-3xl mx-auto px-4 py-8">
         <h1 className="text-2xl font-bold mb-4">{bot.name}</h1>
