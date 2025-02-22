@@ -4,8 +4,6 @@ import { motion } from "framer-motion";
 import Header from "./components/Header";
 import MobileMenu from "./components/MobileMenu";
 import BotCard from "./components/BotCard";
-// تم حذف استيراد الأيقونات لأننا ما راح نستخدم الأسهم
-// import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 export type Bot = {
   id: string;
@@ -37,39 +35,28 @@ export default function HomePage() {
     fetchBots();
   }, []);
 
-  // تم حذف وظيفة السكرول لأننا ما راح نستخدم الأسهم
-  // const scroll = (direction: 'left' | 'right') => {
-  //   if (scrollRef.current) {
-  //     scrollRef.current.scrollBy({ left: direction === "left" ? -window.innerWidth * 0.66 : window.innerWidth * 0.66, behavior: "smooth" });
-  //   }
-  // };
-
   return (
     <div
       className={`min-h-screen w-full transition-colors duration-500 ${
-        darkMode ? "bg-[#301970] text-white" : "bg-gray-100 text-gray-900" // تم تغيير لون الخلفية للون البنفسجي الغامق المشابه للصورة
+        darkMode ? "bg-[#301970] text-white" : "bg-gray-100 text-gray-900"
       } scrollbar-hide`}
       style={{ overflowY: "hidden" }}
     >
+      {/* Header is handled by the existing component */}
       <Header darkMode={darkMode} toggleTheme={toggleTheme} setMenuOpen={setMenuOpen} />
       <MobileMenu darkMode={darkMode} menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
+
+      {/* Main content matching the photo */}
       <main className="px-6 py-8">
         <motion.h2
-          className="text-xl md:text-2xl font-semibold mb-4 text-white" // تم تغيير لون العنوان للأبيض عشان يكون واضح على الخلفية البنفسجية
+          className="text-xl md:text-2xl font-semibold mb-4 text-white"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7 }}
         >
-          TOP 10 BOT  {/* تم تغيير العنوان لـ "TOP 10 BOT" زي الصورة */}
+          TOP 10 BOT
         </motion.h2>
         <div className="relative">
-          {/* تم حذف أزرار الأسهم بالكامل */}
-          {/* <button
-            className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-black/50 p-2 rounded-full z-10"
-            onClick={() => scroll("left")}
-          >
-            <FaChevronLeft className="text-white text-xl" />
-          </button> */}
           <div
             ref={scrollRef}
             className="flex space-x-4 overflow-x-auto scrollbar-hide"
@@ -79,24 +66,21 @@ export default function HomePage() {
               overflowX: "auto",
               scrollbarWidth: "none",
               msOverflowStyle: "none",
-              paddingBottom: "15px", // إضافة مساحة سفلية بسيطة للقائمة عشان تكون أوضح
+              paddingBottom: "15px",
             }}
           >
             {bots.map((bot, idx) => (
-              <div key={idx} className="min-w-[66vw] rounded-lg overflow-hidden"> {/* إضافة border-radius و overflow-hidden عشان تكون البوت كاردز نفس الصورة */}
+              <div key={idx} className="min-w-[66vw] rounded-lg overflow-hidden">
                 <BotCard bot={bot} />
               </div>
             ))}
           </div>
-          {/* <button
-            className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-black/50 p-2 rounded-full z-10"
-            onClick={() => scroll("right")}
-          >
-            <FaChevronRight className="text-white text-xl" />
-          </button> */}
         </div>
       </main>
-      {/* CSS إضافي لإخفاء شريط التمرير */}
+
+      {/* No bottom menu as per your request */}
+
+      {/* Hide scrollbar for a clean look */}
       <style jsx>{`
         ::-webkit-scrollbar {
           display: none;
