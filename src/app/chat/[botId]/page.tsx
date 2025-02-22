@@ -1,10 +1,10 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { motion } from "framer-motion";
-import { FaPaperPlane } from "react-icons/fa";
+import { FaPaperPlane, FaBars, FaEllipsisV } from "react-icons/fa";
 import Header from "@/app/components/Header";
 import MobileMenu from "@/app/components/MobileMenu";
 
@@ -23,18 +23,21 @@ export default function ChatBotIdPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // نخزن كامل المحادثة هنا
-  const [messages, setMessages] = useState<{ sender: "user" | "bot"; text: string }[]>([]);
+  // State for messages and input
+  const [messages, setMessages] = useState<
+    { sender: "user" | "bot"; text: string }[]
+  >([]);
   const [newMessage, setNewMessage] = useState("");
+  const chatRef = useRef<HTMLDivElement>(null);
 
-  // وضع النهار/الليل والقائمة
+  // Theme and menu state
   const [darkMode, setDarkMode] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // معلومات المستخدم من البروفايل (botName, bio)
+  // User profile data
   const [userProfile, setUserProfile] = useState({ botName: "", bio: "" });
 
-  // جلب بيانات البوت
+  // Fetch bot data
   useEffect(() => {
     const fetchBot = async () => {
       try {
@@ -51,7 +54,7 @@ export default function ChatBotIdPage() {
     fetchBot();
   }, [botId]);
 
-  // جلب بيانات المستخدم (البروفايل) من /api/auth/me
+  // Fetch user profile
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
@@ -70,7 +73,7 @@ export default function ChatBotIdPage() {
     fetchUserProfile();
   }, []);
 
-  // إرسال الرسالة
+  // Handle sending a message
   const handleSendMessage = async () => {
     if (!newMessage.trim()) return;
 
@@ -87,7 +90,6 @@ export default function ChatBotIdPage() {
             personality: bot?.personality,
             accent: bot?.accent,
             name: bot?.name,
-            // هنا نمرّر معلومات المستخدم:
             userName: userProfile.botName,
             bio: userProfile.bio,
           },
@@ -102,76 +104,100 @@ export default function ChatBotIdPage() {
     }
   };
 
+  // Auto-scroll to the latest message
+  useEffect(() => {
+    if (chatRef.current) {
+      chatRef.current.scrollTop = chatRef.current.scrollHeight;
+    }
+  }, [messages]);
+
   if (loading) return <p className="text-center mt-10 text-lg">Loading bot details...</p>;
   if (error) return <p className="text-center mt-10 text-red-500">Error: {error}</p>;
   if (!bot) return <p className="text-center mt-10 text-gray-400">Bot not found.</p>;
 
   return (
-    <div
-      className={`min-h-screen w-full transition-colors duration-500 ${
-        darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"
-      }`}
-    >
-      <Header darkMode={darkMode} toggleTheme={() => setDarkMode(!darkMode)}  />
-      <MobileMenu  menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
+    <div className="min-h-screen bg-gradient-to-br from-[#4A2C6B] to-[#7B4EAD] text-white flex flex-col">
+      {/* Header */}
+      <Header
+        darkMode={darkMode}
+        toggleTheme={() => setDarkMode(!darkMode)}
+        
+      />
+      <MobileMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
 
-      <main className="max-w-3xl mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold mb-4">{bot.name}</h1>
-        <p className="mb-6">{bot.description}</p>
-
-        {/* صندوق المحادثة مع عرض الرسائل من الأسفل للأعلى */}
-        <div
-          className={`rounded-lg p-4 mb-4 ${
-            darkMode ? "bg-gray-800" : "bg-gray-200"
-          } h-[400px] overflow-y-auto flex flex-col-reverse gap-3`}
+      {/* Chat Header (Back Button) */}
+      <div className="p-4">
+        <button
+          onClick={() => window.history.back()}
+          className="text-white text-sm"
         >
-          {messages
-            .slice(0)
-            .reverse()
-            .map((message, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-                className={`max-w-[70%] px-3 py-2 rounded text-sm shadow ${
-                  message.sender === "user"
-                    ? "bg-blue-600 text-white self-end ml-auto"
-                    : "bg-gray-700 text-white self-start mr-auto"
-                }`}
-                style={{ whiteSpace: "pre-wrap" }}
-              >
-                <ReactMarkdown
-                  remarkPlugins={[remarkGfm]}
-                  components={
-                    message.sender === "bot"
-                      ? {
-                          em: ({ ...props }) => <em style={{ color: "lightblue" }} {...props} />,
-                        }
-                      : {}
-                  }
-                >
-                  {message.text}
-                </ReactMarkdown>
-              </motion.div>
-            ))}
+          &lt; back
+        </button>
+      </div>
+
+      {/* Chat Area */}
+      <main className="max-w-4xl mx-auto px-4 py-8 flex-1 flex flex-col">
+        {/* Bot Name and Description (Optional, can be hidden on mobile) */}
+        <div className="mb-4 hidden md:block">
+          <h1 className="text-2xl font-bold mb-2">{bot.name}</h1>
+          <p className="text-sm">{bot.description}</p>
         </div>
 
-        {/* صندوق الإدخال */}
-        <div className="flex gap-2 items-center">
+        <div
+          ref={chatRef}
+          className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-hide"
+        >
+          {messages.map((message, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className={`flex items-start gap-2 ${
+                message.sender === "user" ? "justify-end" : "justify-start"
+              }`}
+            >
+              {message.sender === "bot" && (
+                <img
+                  src={bot.image || "/default-bot-avatar.png"}
+                  alt={`${bot.name} Avatar`}
+                  className="w-10 h-10 rounded-full object-cover"
+                />
+              )}
+              <div
+                className={`p-3 rounded-lg shadow ${
+                  message.sender === "user"
+                    ? "bg-[#3C3C3C] text-white self-end mr-12"
+                    : "bg-[#8E6FB0] text-white self-start ml-12"
+                }`}
+              >
+                <p className="font-bold text-sm">{message.sender === "bot" ? bot.name : "YOU"}</p>
+                <p className="text-sm">{message.text}</p>
+              </div>
+              {message.sender === "user" && (
+                <img
+                  src="/default-user-avatar.png"
+                  alt="User Avatar"
+                  className="w-10 h-10 rounded-full object-cover"
+                />
+              )}
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Input Area */}
+        <div className="p-4 flex items-center gap-2 bg-gradient-to-br from-[#4A2C6B] to-[#7B4EAD]">
           <input
             type="text"
-            className={`flex-grow px-3 py-2 rounded border focus:outline-none ${
-              darkMode ? "bg-gray-800 border-gray-600 text-white" : "bg-white border-gray-300 text-gray-900"
-            }`}
-            placeholder="Type your message..."
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+            placeholder="Type your message..."
+            className="flex-1 p-2 rounded-lg bg-[#7B4EAD] text-white placeholder-white border-none focus:outline-none"
           />
           <button
             onClick={handleSendMessage}
-            className="flex items-center justify-center p-3 rounded-full bg-blue-600 hover:bg-blue-700 transition-colors"
+            className="p-2 bg-[#7B4EAD] rounded-full border-none hover:bg-[#6A3EAD] transition-colors"
           >
             <FaPaperPlane className="text-white" size={20} />
           </button>
