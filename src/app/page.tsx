@@ -44,8 +44,8 @@ export default function HomePage() {
       } scrollbar-hide`}
       style={{ overflowY: "hidden" }}
     >
-      <Header darkMode={darkMode} toggleTheme={toggleTheme} setMenuOpen={setMenuOpen} />
-      <MobileMenu darkMode={darkMode} menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
+      <Header darkMode={darkMode} toggleTheme={toggleTheme}  />
+      <MobileMenu  menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
       <main className="px-6 py-8">
         <motion.h2
           className="text-xl md:text-2xl font-semibold mb-4 text-white"
