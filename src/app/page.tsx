@@ -37,22 +37,22 @@ export default function HomePage() {
 
   return (
     <div
-      className={`min-h-screen w-full flex flex-col justify-center transition-colors duration-500 ${
+      className={`min-h-screen w-full transition-colors duration-500 ${
         darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"
       } scrollbar-hide`}
     >
       <Header darkMode={darkMode} toggleTheme={toggleTheme} setMenuOpen={setMenuOpen} />
       <MobileMenu darkMode={darkMode} menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
 
-      <main className="px-6 py-8 flex flex-col justify-center items-center"> 
+      <main className="px-6 py-8"> 
         <h2 className="text-xl md:text-2xl font-semibold mb-6">
           اختر قصتك وابدأ مغامرتك التفاعلية
         </h2>
 
-        <div className="relative w-full" style={{ paddingTop: "50px" }}> 
+        <div className="relative w-full flex justify-center" style={{ paddingTop: "50px" }}> 
           <div 
             ref={scrollRef} 
-            className="flex space-x-4 overflow-x-auto scrollbar-hide touch-pan-x"
+            className="flex space-x-4 overflow-x-auto scrollbar-hide touch-pan-x justify-center"
             style={{
               WebkitOverflowScrolling: "touch", 
               scrollBehavior: "smooth", 
