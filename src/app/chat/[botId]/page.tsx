@@ -1,8 +1,10 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "next/navigation";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { motion } from "framer-motion";
-import { FaPaperPlane } from "react-icons/fa";
+import { FaPaperPlane, FaBars, FaEllipsisV } from "react-icons/fa";
 import Header from "@/app/components/Header";
 import MobileMenu from "@/app/components/MobileMenu";
 
@@ -129,7 +131,7 @@ export default function ChatBotIdPage() {
           onClick={() => window.history.back()}
           className="text-white text-lg"
         >
-          {"< back"} {/* Fixed syntax for rendering "< back" as text */}
+          {"< back"}
         </button>
       </div>
 
@@ -146,7 +148,7 @@ export default function ChatBotIdPage() {
           <div
             ref={chatRef}
             className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-hide"
-            style={{ maxHeight: "calc(100vh - 300px)" }} // Container with fixed height to prevent page expansion
+            style={{ maxHeight: "calc(100vh - 300px)" }} // Container with fixed height
           >
             {messages.map((message, index) => (
               <motion.div
@@ -162,7 +164,7 @@ export default function ChatBotIdPage() {
                   <img
                     src={bot.image || "/default-bot-avatar.png"}
                     alt={`${bot.name} Avatar`}
-                    className="w-12 h-12 rounded-full object-cover" // Slightly larger avatars
+                    className="w-12 h-12 rounded-full object-cover"
                   />
                 )}
                 <div
@@ -175,13 +177,28 @@ export default function ChatBotIdPage() {
                   <p className="font-bold text-sm">
                     {message.sender === "bot" ? bot.name : "YOU"}
                   </p>
-                  <p className="text-sm">{message.text}</p>
+                  <p className="text-sm">
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                      components={
+                        message.sender === "bot"
+                          ? {
+                              em: ({ ...props }) => (
+                                <em style={{ color: "lightblue" }} {...props} />
+                              ),
+                            }
+                          : {}
+                      }
+                    >
+                      {message.text}
+                    </ReactMarkdown>
+                  </p>
                 </div>
                 {message.sender === "user" && (
                   <img
                     src="/default-user-avatar.png"
                     alt="User Avatar"
-                    className="w-12 h-12 rounded-full object-cover" // Slightly larger avatars
+                    className="w-12 h-12 rounded-full object-cover"
                   />
                 )}
               </motion.div>
@@ -189,7 +206,7 @@ export default function ChatBotIdPage() {
           </div>
         </div>
 
-        {/* Input Area with Reversed Shadow */}
+        {/* Input Area with Fading Shadow on All Sides */}
         <div className="p-4 flex items-center gap-2 bg-gradient-to-br from-[#4A2C6B] to-[#7B4EAD]">
           <input
             type="text"
@@ -199,7 +216,7 @@ export default function ChatBotIdPage() {
             placeholder="Type your message..."
             className="flex-1 p-2 rounded-lg bg-[#7B4EAD] text-white placeholder-white border-none focus:outline-none"
             style={{
-              boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.3), 0px -4px 6px rgba(0, 0, 0, 0.1)", // Reversed shadow (top to bottom transparency)
+              boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.2), 0px 0px 10px rgba(0, 0, 0, 0.2), 0px 0px 10px rgba(0, 0, 0, 0.2), 0px 0px 10px rgba(0, 0, 0, 0.2)",
             }}
           />
           <button
