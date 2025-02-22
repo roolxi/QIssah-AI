@@ -4,7 +4,7 @@ import { useParams } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { motion } from "framer-motion";
-import { FaPaperPlane } from "react-icons/fa"; // Only keep the used icon
+import { FaPaperPlane } from "react-icons/fa";
 import Header from "@/app/components/Header";
 import MobileMenu from "@/app/components/MobileMenu";
 
@@ -136,7 +136,7 @@ export default function ChatBotIdPage() {
       </div>
 
       {/* Chat Container */}
-      <main className="max-w-4xl mx-auto px-4 py-8 flex-1 flex flex-col">
+      <main className="max-w-4xl mx-auto px-4 py-8 flex-1 flex flex-col"> {/* Added closing </main> here */}
         {/* Bot Name and Description (Optional, can be hidden on mobile) */}
         <div className="mb-4 hidden md:block">
           <h1 className="text-2xl font-bold mb-2">{bot.name}</h1>
@@ -206,8 +206,15 @@ export default function ChatBotIdPage() {
           </div>
         </div>
 
-        {/* Input Area with Fading Shadow on All Sides */}
-        <div className="p-4 flex items-center gap-2 bg-gradient-to-br from-[#4A2C6B] to-[#7B4EAD]">
+        {/* Input Area with Outer Box Fading into Background */}
+        <div
+          className="p-4 flex items-center gap-2"
+          style={{
+            background: "transparent",
+            boxShadow: "0px 0px 20px rgba(0, 0, 0, 0.2), 0px 0px 20px rgba(0, 0, 0, 0.2), 0px 0px 20px rgba(0, 0, 0, 0.2), 0px 0px 20px rgba(0, 0, 0, 0.2)",
+            borderRadius: "8px",
+          }}
+        >
           <input
             type="text"
             value={newMessage}
@@ -226,7 +233,7 @@ export default function ChatBotIdPage() {
             <FaPaperPlane className="text-white" size={20} />
           </button>
         </div>
-      </main>
+      </main> {/* Added closing </main> tag */}
     </div>
   );
 }
