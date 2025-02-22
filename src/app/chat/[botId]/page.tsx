@@ -1,8 +1,10 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "next/navigation";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { motion } from "framer-motion";
-import { FaPaperPlane } from "react-icons/fa";
+import { FaPaperPlane, FaBars, FaEllipsisV } from "react-icons/fa";
 import Header from "@/app/components/Header";
 import MobileMenu from "@/app/components/MobileMenu";
 
@@ -127,13 +129,13 @@ export default function ChatBotIdPage() {
       <div className="p-4">
         <button
           onClick={() => window.history.back()}
-          className="text-white text-sm"
+          className="text-white text-lg"
         >
-          &lt; back
+          {"< back"} {/* Fixed syntax for rendering "< back" as text */}
         </button>
       </div>
 
-      {/* Chat Area */}
+      {/* Chat Container */}
       <main className="max-w-4xl mx-auto px-4 py-8 flex-1 flex flex-col">
         {/* Bot Name and Description (Optional, can be hidden on mobile) */}
         <div className="mb-4 hidden md:block">
@@ -141,49 +143,55 @@ export default function ChatBotIdPage() {
           <p className="text-sm">{bot.description}</p>
         </div>
 
-        <div
-          ref={chatRef}
-          className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-hide"
-        >
-          {messages.map((message, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-              className={`flex items-start gap-2 ${
-                message.sender === "user" ? "justify-end" : "justify-start"
-              }`}
-            >
-              {message.sender === "bot" && (
-                <img
-                  src={bot.image || "/default-bot-avatar.png"}
-                  alt={`${bot.name} Avatar`}
-                  className="w-10 h-10 rounded-full object-cover"
-                />
-              )}
-              <div
-                className={`p-3 rounded-lg shadow ${
-                  message.sender === "user"
-                    ? "bg-[#3C3C3C] text-white self-end mr-12"
-                    : "bg-[#8E6FB0] text-white self-start ml-12"
+        {/* Chat Area in a Fixed Container */}
+        <div className="max-w-4xl mx-auto px-4 flex-1 flex flex-col">
+          <div
+            ref={chatRef}
+            className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-hide"
+            style={{ maxHeight: "calc(100vh - 300px)" }} // Container with fixed height to prevent page expansion
+          >
+            {messages.map((message, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+                className={`flex items-start gap-2 ${
+                  message.sender === "user" ? "justify-end" : "justify-start"
                 }`}
               >
-                <p className="font-bold text-sm">{message.sender === "bot" ? bot.name : "YOU"}</p>
-                <p className="text-sm">{message.text}</p>
-              </div>
-              {message.sender === "user" && (
-                <img
-                  src="/default-user-avatar.png"
-                  alt="User Avatar"
-                  className="w-10 h-10 rounded-full object-cover"
-                />
-              )}
-            </motion.div>
-          ))}
+                {message.sender === "bot" && (
+                  <img
+                    src={bot.image || "/default-bot-avatar.png"}
+                    alt={`${bot.name} Avatar`}
+                    className="w-12 h-12 rounded-full object-cover" // Slightly larger avatars
+                  />
+                )}
+                <div
+                  className={`p-3 rounded-lg shadow ${
+                    message.sender === "user"
+                      ? "bg-[#3C3C3C] text-white self-end mr-12"
+                      : "bg-[#8E6FB0] text-white self-start ml-12"
+                  }`}
+                >
+                  <p className="font-bold text-sm">
+                    {message.sender === "bot" ? bot.name : "YOU"}
+                  </p>
+                  <p className="text-sm">{message.text}</p>
+                </div>
+                {message.sender === "user" && (
+                  <img
+                    src="/default-user-avatar.png"
+                    alt="User Avatar"
+                    className="w-12 h-12 rounded-full object-cover" // Slightly larger avatars
+                  />
+                )}
+              </motion.div>
+            ))}
+          </div>
         </div>
 
-        {/* Input Area */}
+        {/* Input Area with Reversed Shadow */}
         <div className="p-4 flex items-center gap-2 bg-gradient-to-br from-[#4A2C6B] to-[#7B4EAD]">
           <input
             type="text"
@@ -192,6 +200,9 @@ export default function ChatBotIdPage() {
             onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
             placeholder="Type your message..."
             className="flex-1 p-2 rounded-lg bg-[#7B4EAD] text-white placeholder-white border-none focus:outline-none"
+            style={{
+              boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.3), 0px -4px 6px rgba(0, 0, 0, 0.1)", // Reversed shadow (top to bottom transparency)
+            }}
           />
           <button
             onClick={handleSendMessage}
