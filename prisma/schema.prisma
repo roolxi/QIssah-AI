@@ -42,6 +42,7 @@ model Bot {
   updatedAt   DateTime @updatedAt
   accent      String?
   apiKey      String?
+  topEntry TopBot? @relation("BotTop")
 
   // التصنيف
   categoryId String? @db.Uuid
