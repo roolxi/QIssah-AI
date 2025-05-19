@@ -92,11 +92,9 @@ enum Role {
 }
 /// 🏆 أفضل 10 بوتات (الصف العاشر الأخير هو رقم 10)
 model TopBot {
-  id       Int    @id @default(autoincrement())
-  rank     Int    @unique                     // 1 إلى 10
-  botId    String @unique @db.Uuid            // ارتباط بالبوت
-  bot      Bot    @relation(fields: [botId], references: [id])
-
-  @@check(rank >= 1 && rank <= 10)            // يضمن إن الرقم من 1 إلى 10 فقط
+  id    Int    @id @default(autoincrement())
+  rank  Int    @unique          // 1-10
+  botId String @unique @db.Uuid // يشير إلى Bot
+  bot   Bot    @relation(fields: [botId], references: [id])
 }
 
