@@ -44,7 +44,7 @@ model Bot {
   apiKey      String?
 
   // التصنيف
-  categoryId  String?
+  categoryId String? @db.Uuid
   category    Category? @relation(fields: [categoryId], references: [id])
 
   // علاقات
