@@ -42,7 +42,9 @@ model Bot {
   updatedAt   DateTime @updatedAt
   accent      String?
   apiKey      String?
-  topEntry TopBot? @relation("BotTop")
+  topEntry TopBot? @relation("TopRank")
+}
+
 
   // التصنيف
   categoryId String? @db.Uuid
@@ -96,6 +98,6 @@ model TopBot {
   id    Int    @id @default(autoincrement())
   rank  Int    @unique          // 1-10
   botId String @unique @db.Uuid // يشير إلى Bot
-  bot   Bot    @relation(fields: [botId], references: [id])
+  bot    Bot    @relation("TopRank", fields: [botId], references: [id])
 }
 
