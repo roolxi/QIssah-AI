@@ -7,7 +7,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// 👤 المستخدم
+/*───────────────────────────*
+ * 1) USERS                   *
+ *───────────────────────────*/
 model User {
   id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   username   String   @unique
@@ -16,88 +18,96 @@ model User {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
-  // حقول إضافية
-  bio        String?
-  botName    String?
+  // معلومات إضافية
+  bio     String?
+  botName String?
 
-  // لوحة التحكم
-  role       Role     @default(USER) // USER أو ADMIN
-  blocked    Boolean  @default(false) // إذا كان محظور
+  // صلاحيات ولوحة تحكّم
+  role    Role    @default(USER)
+  blocked Boolean @default(false)
 
   // العلاقات
   bots          Bot[]         @relation("UserBots")
   conversations Conversation[]
 }
 
-// 🤖 البوت
+/*───────────────────────────*
+ * 2) BOTS                    *
+ *───────────────────────────*/
 model Bot {
-  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name        String
-  description String
-  image       String?
-  personality String?
-  isPublic    Boolean  @default(true)
-  creatorId   String?  @db.Uuid
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  accent      String?
-  apiKey      String?
-  topEntry TopBot? @relation("TopRank")
-}
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name          String
+  description   String
+  image         String?
+  personality   String?
+  isPublic      Boolean  @default(true)
+  accent        String?
+  apiKey        String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
+  // صاحب البوت
+  creatorId String? @db.Uuid
+  creator   User?   @relation("UserBots", fields: [creatorId], references: [id])
 
   // التصنيف
-  categoryId String? @db.Uuid
-  category    Category? @relation(fields: [categoryId], references: [id])
+  categoryId String?   @db.Uuid
+  category   Category? @relation(fields: [categoryId], references: [id])
 
-  // علاقات
-  creator     User?    @relation("UserBots", fields: [creatorId], references: [id])
+  // علاقات أخرى
   conversations Conversation[] @relation("BotConversations")
+  topEntry       TopBot?        @relation("TopRank")
 }
 
-// 🗂️ التصنيفات (Adventure - Role-play - Horror ...)
+/*───────────────────────────*
+ * 3) CATEGORIES              *
+ *───────────────────────────*/
 model Category {
-  id    String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name  String  @unique
-  bots  Bot[]
+  id   String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name String @unique
+  bots Bot[]
 }
 
-// 💬 المحادثة
+/*───────────────────────────*
+ * 4) TOP-10 BOTS             *
+ *───────────────────────────*/
+model TopBot {
+  id    Int    @id @default(autoincrement())
+  rank  Int    @unique               // 1-10
+  botId String @unique @db.Uuid
+  bot   Bot    @relation("TopRank", fields: [botId], references: [id])
+}
+
+/*───────────────────────────*
+ * 5) CONVERSATIONS & MESSAGES*
+ *───────────────────────────*/
 model Conversation {
-  id        String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId    String       @db.Uuid
-  botId     String?      @db.Uuid
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @db.Uuid
+  botId     String?  @db.Uuid
   title     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  // العلاقات
-  user      User         @relation(fields: [userId], references: [id])
-  bot       Bot?         @relation("BotConversations", fields: [botId], references: [id])
-  messages  Message[]
+  user User @relation(fields: [userId], references: [id])
+  bot  Bot? @relation("BotConversations", fields: [botId], references: [id])
+  messages Message[]
 }
 
-// 📩 الرسائل داخل المحادثة
 model Message {
-  id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  conversationId String       @db.Uuid
-  sender         String       // "user" أو "bot"
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  conversationId String   @db.Uuid
+  sender         String   // "user" أو "bot"
   text           String
-  createdAt      DateTime     @default(now())
+  createdAt      DateTime @default(now())
 
-  conversation   Conversation  @relation(fields: [conversationId], references: [id])
+  conversation Conversation @relation(fields: [conversationId], references: [id])
 }
 
-// 🏷️ الأدوار (مستخدم عادي أو أدمن)
+/*───────────────────────────*
+ * 6) ENUMS                   *
+ *───────────────────────────*/
 enum Role {
   USER
   ADMIN
 }
-/// 🏆 أفضل 10 بوتات (الصف العاشر الأخير هو رقم 10)
-model TopBot {
-  id    Int    @id @default(autoincrement())
-  rank  Int    @unique          // 1-10
-  botId String @unique @db.Uuid // يشير إلى Bot
-  bot    Bot    @relation("TopRank", fields: [botId], references: [id])
-}
-
