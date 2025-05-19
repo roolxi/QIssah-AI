@@ -7,6 +7,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// 👤 المستخدم
 model User {
   id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   username   String   @unique
@@ -19,11 +20,16 @@ model User {
   bio        String?
   botName    String?
 
+  // لوحة التحكم
+  role       Role     @default(USER) // USER أو ADMIN
+  blocked    Boolean  @default(false) // إذا كان محظور
+
   // العلاقات
   bots          Bot[]         @relation("UserBots")
   conversations Conversation[]
 }
 
+// 🤖 البوت
 model Bot {
   id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name        String
@@ -36,12 +42,24 @@ model Bot {
   updatedAt   DateTime @updatedAt
   accent      String?
   apiKey      String?
+
+  // التصنيف
+  categoryId  String?
+  category    Category? @relation(fields: [categoryId], references: [id])
+
+  // علاقات
   creator     User?    @relation("UserBots", fields: [creatorId], references: [id])
-  
-  // علاقة المحادثات مع البوت (اسم العلاقة "BotConversations")
   conversations Conversation[] @relation("BotConversations")
 }
 
+// 🗂️ التصنيفات (Adventure - Role-play - Horror ...)
+model Category {
+  id    String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name  String  @unique
+  bots  Bot[]
+}
+
+// 💬 المحادثة
 model Conversation {
   id        String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId    String       @db.Uuid
@@ -56,6 +74,7 @@ model Conversation {
   messages  Message[]
 }
 
+// 📩 الرسائل داخل المحادثة
 model Message {
   id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   conversationId String       @db.Uuid
@@ -64,4 +83,10 @@ model Message {
   createdAt      DateTime     @default(now())
 
   conversation   Conversation  @relation(fields: [conversationId], references: [id])
+}
+
+// 🏷️ الأدوار (مستخدم عادي أو أدمن)
+enum Role {
+  USER
+  ADMIN
 }
