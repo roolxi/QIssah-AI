@@ -1,3 +1,4 @@
+// src/app/page.tsx
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
@@ -34,7 +35,6 @@ export default function HomePage() {
         console.error("Error fetching bots:", error);
       }
     };
-
     fetchBots();
   }, []);
 
@@ -45,6 +45,7 @@ export default function HomePage() {
           ? "bg-gradient-to-br from-[#5f35aa] to-[#212121]"
           : "bg-gray-100 text-gray-900"
       }`}
+      style={{ overflowY: "hidden" }} // re-added overflowY hidden
     >
       <Header darkMode={darkMode} toggleTheme={toggleTheme} />
       <MobileMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
