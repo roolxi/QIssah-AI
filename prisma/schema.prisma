@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  username   String   @unique
+  email      String   @unique
+  password   String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // حقول إضافية
+  bio        String?
+  botName    String?
+
+  // العلاقات
+  bots          Bot[]         @relation("UserBots")
+  conversations Conversation[]
+}
+
+model Bot {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String
+  description String
+  image       String?
+  personality String?
+  isPublic    Boolean  @default(true)
+  creatorId   String?  @db.Uuid
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  accent      String?
+  apiKey      String?
+  creator     User?    @relation("UserBots", fields: [creatorId], references: [id])
+  
+  // علاقة المحادثات مع البوت (اسم العلاقة "BotConversations")
+  conversations Conversation[] @relation("BotConversations")
+}
+
+model Conversation {
+  id        String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String       @db.Uuid
+  botId     String?      @db.Uuid
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  title     String?
+
+  // العلاقات
+  user      User         @relation(fields: [userId], references: [id])
+  bot       Bot?         @relation("BotConversations", fields: [botId], references: [id])
+  messages  Message[]
+}
+
+model Message {
+  id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  conversationId String       @db.Uuid
+  sender         String       // "user" أو "bot"
+  text           String
+  createdAt      DateTime     @default(now())
+
+  conversation   Conversation  @relation(fields: [conversationId], references: [id])
+}
