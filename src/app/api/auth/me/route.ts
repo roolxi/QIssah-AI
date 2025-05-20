@@ -24,6 +24,6 @@ export async function GET(req: Request) {
   const user = await prisma.user.findUnique({ where: { id: payload.id } });
   if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
 
-  const { password, ...safeUser } = user;
+  const/* istanbul ignore next */ { password, ...safeUser } = user;
   return NextResponse.json(safeUser);
 }

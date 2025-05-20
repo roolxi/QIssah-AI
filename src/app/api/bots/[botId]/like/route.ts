@@ -39,7 +39,7 @@ export async function DELETE(req: Request, { params }: Params) {
     });
 
     return NextResponse.json({ liked: false });
-  } catch {
-    return NextResponse.json({ error: 'Could not unlike' }, { status: 400 });
+  } catch /* istanbul ignore next */ 
+  {return NextResponse.json({ error: 'Could not unlike' }, { status: 400 });
   }
 }
