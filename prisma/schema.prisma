@@ -45,6 +45,8 @@ model Bot {
   apiKey        String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+  likesCount Int      @default(0)
+  likes      BotLike[]
 
   // صاحب البوت
   creatorId String? @db.Uuid
@@ -110,4 +112,14 @@ model Message {
 enum Role {
   USER
   ADMIN
+}
+
+model BotLike {
+  userId String @db.Uuid
+  botId  String @db.Uuid
+
+  user User @relation(fields: [userId], references: [id])
+  bot  Bot  @relation(fields: [botId], references: [id])
+
+  @@id([userId, botId]) // يمنع تكرار الإعجاب
 }

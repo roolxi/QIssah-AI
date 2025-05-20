@@ -1,40 +1,35 @@
-import { PrismaClient } from "@prisma/client";
-import { NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import { NextResponse } from 'next/server';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import { prisma } from '@/lib/prisma';
 
-const prisma = new PrismaClient();
-const SECRET_KEY = process.env.JWT_SECRET || "default_secret";
+const SECRET_KEY = process.env.JWT_SECRET!;
+if (!SECRET_KEY) throw new Error('JWT_SECRET missing');
 
 export async function POST(req: Request) {
-  try {
-    const { username, email, password } = await req.json();
-    if (!username || !email || !password) {
-      return NextResponse.json({ error: "All fields are required" }, { status: 400 });
-    }
+  const { username, email, password } = await req.json();
+  if (!username || !email || !password)
+    return NextResponse.json({ error: 'All fields required' }, { status: 400 });
 
-    const existingUser = await prisma.user.findUnique({ where: { email } });
-    if (existingUser) {
-      return NextResponse.json({ error: "Email already exists" }, { status: 400 });
-    }
+  const exists = await prisma.user.findUnique({ where: { email } });
+  if (exists) return NextResponse.json({ error: 'Email already used' }, { status: 400 });
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+  const hashed = await bcrypt.hash(password, 10);
 
-    const newUser = await prisma.user.create({
-      data: { username, email, password: hashedPassword },
-    });
+  const newUser = await prisma.user.create({
+    data: { username, email, password: hashed, role: 'USER', blocked: false },
+  });
 
-    // Generate JWT
-    const token = jwt.sign({ id: newUser.id, email: newUser.email }, SECRET_KEY, { expiresIn: "7d" });
+  const token = jwt.sign(
+    { id: newUser.id, email: newUser.email, role: newUser.role, blocked: false },
+    SECRET_KEY,
+    { expiresIn: '7d' }
+  );
 
-    // NOTE: We do NOT include 'HttpOnly' here so the client can see 'token' in document.cookie
-    const response = NextResponse.json({ message: "User registered successfully", user: newUser });
-    response.headers.set("Set-Cookie", `token=${token}; Path=/; Max-Age=604800; Secure`);
-    return response;
-  } catch (error) {
-    console.error("Error creating user:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
-  } finally {
-    await prisma.$disconnect();
-  }
+  const res = NextResponse.json({ message: 'Registered', user: { ...newUser, password: undefined } });
+  res.headers.set(
+    'Set-Cookie',
+    `token=${token}; Path=/; Max-Age=604800; Secure; SameSite=None; HttpOnly`
+  );
+  return res;
 }

@@ -1,17 +1,20 @@
-import { PrismaClient } from '@prisma/client';
-import { NextResponse, NextRequest } from 'next/server';
-
-const prisma = new PrismaClient();
+// src/app/api/bots/[botId]/route.ts
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
 
 export async function GET(
-  request: NextRequest,
-  context: any
+  _req: Request,
+  { params }: { params: { botId: string } }
 ) {
-  const { botId } = context.params as { botId: string };
+  const { botId } = params;
 
   try {
     const bot = await prisma.bot.findUnique({
       where: { id: botId },
+      include: {
+        creator: { select: { username: true } },
+        // _count: { select: { likes: true } }, // لو تحتاج
+      },
     });
 
     if (!bot) {
@@ -19,10 +22,8 @@ export async function GET(
     }
 
     return NextResponse.json(bot);
-  } catch (error) {
-    console.error('Error fetching bot by ID:', error);
+  } catch (err) {
+    console.error('Error fetching bot:', err);
     return NextResponse.json({ error: 'Failed to fetch bot' }, { status: 500 });
-  } finally {
-    await prisma.$disconnect();
   }
 }

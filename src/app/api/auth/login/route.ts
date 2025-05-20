@@ -1,59 +1,36 @@
-import { PrismaClient } from "@prisma/client";
-import { NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import { NextResponse } from 'next/server';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import { prisma } from '@/lib/prisma';
 
-const prisma = new PrismaClient();
-
-// Get the raw secret from the environment
-const rawSecret = process.env.JWT_SECRET;
-if (!rawSecret) {
-  throw new Error("JWT_SECRET is not defined in environment variables");
-}
-
-// Sanitize the secret by removing non-ASCII characters
-const SECRET_KEY = rawSecret.replace(/[^\x00-\x7F]/g, "");
-console.log("Sanitized JWT_SECRET:", SECRET_KEY);
+const SECRET_KEY = process.env.JWT_SECRET!;
+if (!SECRET_KEY) throw new Error('JWT_SECRET missing');
 
 export async function POST(req: Request) {
-  try {
-    const { email, password } = await req.json();
-    if (!email || !password) {
-      return NextResponse.json({ error: "All fields are required" }, { status: 400 });
-    }
+  const { email, password } = await req.json();
 
-    const user = await prisma.user.findUnique({ where: { email } });
-    if (!user) {
-      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
-    }
+  if (!email || !password)
+    return NextResponse.json({ error: 'All fields required' }, { status: 400 });
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
-    }
+  const user = await prisma.user.findUnique({ where: { email } });
+  if (!user) return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
 
-    // Generate JWT using a Buffer of the sanitized secret
-    const token = jwt.sign(
-      { id: user.id, email: user.email },
-      Buffer.from(SECRET_KEY, "utf-8"),
-      { expiresIn: "7d" }
-    );
+  const match = await bcrypt.compare(password, user.password);
+  if (!match) return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
 
-    const response = NextResponse.json({ message: "Login successful", user });
-    response.headers.append(
-      "Set-Cookie",
-      `token=${token}; Path=/; Max-Age=604800; Secure; SameSite=None; Domain=qissah-ai.vercel.app`
-    );
-    response.headers.append(
-      "Set-Cookie",
-      `username=${user.username}; Path=/; Max-Age=604800; Secure; SameSite=None; Domain=qissah-ai.vercel.app`
-    );
+  if (user.blocked)
+    return NextResponse.json({ error: 'Account blocked' }, { status: 403 });
 
-    return response;
-  } catch (error) {
-    console.error("Error processing login:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
-  } finally {
-    await prisma.$disconnect();
-  }
+  const token = jwt.sign(
+    { id: user.id, email: user.email, role: user.role, blocked: user.blocked },
+    SECRET_KEY,
+    { expiresIn: '7d' }
+  );
+
+  const res = NextResponse.json({ message: 'Login successful', user: { ...user, password: undefined } });
+  res.headers.set(
+    'Set-Cookie',
+    `token=${token}; Path=/; Max-Age=604800; Secure; SameSite=None; HttpOnly`
+  );
+  return res;
 }
