@@ -22,21 +22,16 @@ export type Bot = {
 export default function HomePage() {
   const [bots, setBots] = useState<Bot[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [selectedCat, setSelectedCat] = useState<string>(""); // "" يعني كل الفئات
+  const [selectedCat, setSelectedCat] = useState<string>("");
   const [menuOpen, setMenuOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(true);
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
-  // جلب كل البوتات مع الفئة وعدد اللايكات والإنشائي
   useEffect(() => {
     fetch("/api/bots")
       .then((res) => res.json())
       .then((data: Bot[]) => setBots(data))
       .catch(console.error);
-  }, []);
-
-  // جلب قائمة التصنيفات
-  useEffect(() => {
     fetch("/api/categories")
       .then((res) => res.json())
       .then((data: Category[]) => setCategories(data))
@@ -44,8 +39,6 @@ export default function HomePage() {
   }, []);
 
   const toggleTheme = () => setDarkMode((m) => !m);
-
-  // فلترة البوتات حسب الفئة
   const displayedBots = selectedCat
     ? bots.filter((b) => b.category.id === selectedCat)
     : bots;
@@ -59,7 +52,7 @@ export default function HomePage() {
       }`}
       style={{ overflowY: "hidden" }}
     >
-      {/* Header ثابت فوق */}
+      {/* Header ثابت فوق مع زرّ فتح القائمة */}
       <Header
         darkMode={darkMode}
         toggleTheme={toggleTheme}
@@ -67,8 +60,8 @@ export default function HomePage() {
       />
       <MobileMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
 
-      <main className="pt-16 px-4 py-6 md:px-8 md:py-10 space-y-6">
-        {/* شريط اختيار التصنيف */}
+      <main className="pt-16 px-4 py-8 md:px-8 md:py-10 space-y-6">
+        {/* شريط الفلاتر */}
         <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-2">
           <button
             onClick={() => setSelectedCat("")}
@@ -105,7 +98,7 @@ export default function HomePage() {
           TOP 10 BOT
         </motion.h2>
 
-        {/* شريط تمرير أفقي للبوتات */}
+        {/* قائمة البوتات أفقياً */}
         <div className="overflow-x-auto scrollbar-hide">
           <div
             ref={scrollRef}
@@ -120,7 +113,10 @@ export default function HomePage() {
                 key={bot.id}
                 className="min-w-[80vw] sm:min-w-[60vw] md:min-w-[40vw] lg:min-w-[33vw] xl:min-w-[25vw]"
               >
-                <BotCard bot={bot} />
+                {/* أضفنا cursor-pointer للوضوح */}
+                <div className="cursor-pointer">
+                  <BotCard bot={bot} />
+                </div>
               </div>
             ))}
           </div>
