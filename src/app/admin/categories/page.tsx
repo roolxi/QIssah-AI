@@ -1,34 +1,38 @@
-// src/app/admin/bots/page.tsx
 import { prisma } from '@/lib/prisma';
+import AddCategoryForm from './AddCategoryForm';
 
-export default async function AdminBotsPage() {
-  const bots = await prisma.bot.findMany({
-    include: { creator: { select: { username: true } } },
-    orderBy: { createdAt: 'desc' },
+export const metadata = { title: 'التصنيفات' };
+
+export default async function CategoriesPage() {
+  const categories = await prisma.category.findMany({
+    include: { _count: { select: { bots: true } } },
+    orderBy: { name: 'asc' },
   });
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Bots</h1>
+    <div className="p-6 space-y-6">
+      <h1 className="text-2xl font-bold">التصنيفات</h1>
 
-      <table className="w-full text-sm">
-        <thead>
+      {/* جدول التصنيفات */}
+      <table className="w-full text-sm bg-white shadow-md rounded">
+        <thead className="bg-gray-200 text-gray-700">
           <tr>
-            <th>Name</th>
-            <th>Creator</th>
-            <th>Likes</th>
+            <th className="p-2 text-start">الاسم</th>
+            <th className="p-2 text-center">عدد البوتات</th>
           </tr>
         </thead>
         <tbody>
-          {bots.map((b) => (
-            <tr key={b.id}>
-              <td>{b.name}</td>
-              <td>{b.creator?.username ?? '-'}</td>
-              <td>{b.likesCount}</td>
+          {categories.map((c) => (
+            <tr key={c.id} className="border-b last:border-none">
+              <td className="p-2">{c.name}</td>
+              <td className="p-2 text-center">{c._count.bots}</td>
             </tr>
           ))}
         </tbody>
       </table>
+
+      {/* نموذج إضافة تصنيف */}
+      <AddCategoryForm />
     </div>
   );
 }
