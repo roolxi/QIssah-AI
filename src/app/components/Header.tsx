@@ -1,17 +1,21 @@
 "use client";
-import { FaMoon, FaSun } from "react-icons/fa";
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { FaMoon, FaSun, FaBars } from "react-icons/fa";
 import AuthButton from "./AuthButton";
 import UserMenu from "./UserMenu";
-import DropdownMenu from "./DropdownMenu";
-import { useEffect, useState } from "react";
-import Link from "next/link";
 
 interface HeaderProps {
   darkMode: boolean;
   toggleTheme: () => void;
+  onMenuToggle: () => void;    // ضفنا toggle للـ MobileMenu
 }
 
-export default function Header({ darkMode, toggleTheme }: HeaderProps) {
+export default function Header({
+  darkMode,
+  toggleTheme,
+  onMenuToggle,
+}: HeaderProps) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
@@ -20,19 +24,41 @@ export default function Header({ darkMode, toggleTheme }: HeaderProps) {
 
   return (
     <header
-      className={`flex items-center justify-between h-16 px-4 bg-gradient-to-br from-[#D8BFD8] to-[#4B0082] text-white`}
-      style={{ minHeight: "4rem" }}
+      className="
+        fixed top-0 inset-x-0 z-50 flex items-center justify-between
+        px-6 py-3
+        backdrop-blur-md bg-gradient-to-br from-purple-700/60 to-indigo-900/60
+        text-white
+      "
     >
-      <Link href="/" className="flex items-center justify-center flex-grow">
-        <h1 className="text-2xl font-bold uppercase">QISSAAH.AI</h1>
+      {/* زر القائمة للهواتف */}
+      <button
+        onClick={onMenuToggle}
+        className="md:hidden text-xl p-2 rounded hover:bg-white/20 transition"
+      >
+        <FaBars />
+      </button>
+
+      {/* شعار الموقع */}
+      <Link href="/" className="text-2xl font-bold uppercase tracking-wide">
+        QISSAAH.AI
       </Link>
 
+      {/* مساحات فارغة حتى يدور الـ flex بشكل سليم */}
+      <div className="flex-1" />
+
+      {/* الأزرار الجانبية */}
       <div className="flex items-center gap-4">
-        <button onClick={toggleTheme} className="text-xl">
+        {/* تبديل الثيم */}
+        <button
+          onClick={toggleTheme}
+          className="p-2 rounded-full hover:bg-white/20 transition"
+        >
           {darkMode ? <FaSun /> : <FaMoon />}
         </button>
+
+        {/* زر تسجيل/حساب مستخدم */}
         {isLoggedIn ? <UserMenu /> : <AuthButton />}
-        <DropdownMenu />
       </div>
     </header>
   );

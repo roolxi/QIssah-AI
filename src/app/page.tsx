@@ -7,38 +7,48 @@ import MobileMenu from "@/app/components/MobileMenu";
 import BotCard from "@/app/components/BotCard";
 import BottomNavBar from "@/app/components/BottomNavBar";
 
+export type Category = { id: string; name: string };
+
 export type Bot = {
   id: string;
   name: string;
   description: string;
   image: string;
-  likesCount: number;           // أضف
-  creator: { username: string } // أضف
+  likesCount: number;
+  creator: { username: string };
+  category: { id: string; name: string };
 };
 
 export default function HomePage() {
   const [bots, setBots] = useState<Bot[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [selectedCat, setSelectedCat] = useState<string>(""); // "" يعني كل الفئات
   const [menuOpen, setMenuOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(true);
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
-  const toggleTheme = () => setDarkMode(!darkMode);
-
+  // جلب كل البوتات مع الفئة وعدد اللايكات والإنشائي
   useEffect(() => {
-    const fetchBots = async () => {
-      try {
-        const response = await fetch("/api/bots");
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        setBots(data);
-      } catch (error) {
-        console.error("Error fetching bots:", error);
-      }
-    };
-    fetchBots();
+    fetch("/api/bots")
+      .then((res) => res.json())
+      .then((data: Bot[]) => setBots(data))
+      .catch(console.error);
   }, []);
+
+  // جلب قائمة التصنيفات
+  useEffect(() => {
+    fetch("/api/categories")
+      .then((res) => res.json())
+      .then((data: Category[]) => setCategories(data))
+      .catch(console.error);
+  }, []);
+
+  const toggleTheme = () => setDarkMode((m) => !m);
+
+  // فلترة البوتات حسب الفئة
+  const displayedBots = selectedCat
+    ? bots.filter((b) => b.category.id === selectedCat)
+    : bots;
 
   return (
     <div
@@ -47,12 +57,45 @@ export default function HomePage() {
           ? "bg-gradient-to-br from-[#5f35aa] to-[#212121]"
           : "bg-gray-100 text-gray-900"
       }`}
-      style={{ overflowY: "hidden" }} // re-added overflowY hidden
+      style={{ overflowY: "hidden" }}
     >
-      <Header darkMode={darkMode} toggleTheme={toggleTheme} />
+      {/* Header ثابت فوق */}
+      <Header
+        darkMode={darkMode}
+        toggleTheme={toggleTheme}
+        onMenuToggle={() => setMenuOpen((o) => !o)}
+      />
       <MobileMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
 
-      <main className="px-4 py-6 md:px-8 md:py-10 space-y-6">
+      <main className="pt-16 px-4 py-6 md:px-8 md:py-10 space-y-6">
+        {/* شريط اختيار التصنيف */}
+        <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-2">
+          <button
+            onClick={() => setSelectedCat("")}
+            className={`px-4 py-2 whitespace-nowrap rounded-full font-medium transition ${
+              selectedCat === ""
+                ? "bg-purple-500 text-white"
+                : "bg-white/20 text-white hover:bg-white/30"
+            }`}
+          >
+            الكل
+          </button>
+          {categories.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => setSelectedCat(cat.id)}
+              className={`px-4 py-2 whitespace-nowrap rounded-full font-medium transition ${
+                selectedCat === cat.id
+                  ? "bg-purple-500 text-white"
+                  : "bg-white/20 text-white hover:bg-white/30"
+              }`}
+            >
+              {cat.name}
+            </button>
+          ))}
+        </div>
+
+        {/* عنوان القسم */}
         <motion.h2
           className="text-lg sm:text-xl md:text-2xl font-semibold text-white"
           initial={{ opacity: 0, y: 10 }}
@@ -62,6 +105,7 @@ export default function HomePage() {
           TOP 10 BOT
         </motion.h2>
 
+        {/* شريط تمرير أفقي للبوتات */}
         <div className="overflow-x-auto scrollbar-hide">
           <div
             ref={scrollRef}
@@ -71,7 +115,7 @@ export default function HomePage() {
               scrollBehavior: "smooth",
             }}
           >
-            {bots.map((bot) => (
+            {displayedBots.map((bot) => (
               <div
                 key={bot.id}
                 className="min-w-[80vw] sm:min-w-[60vw] md:min-w-[40vw] lg:min-w-[33vw] xl:min-w-[25vw]"

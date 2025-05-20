@@ -1,3 +1,4 @@
+// src/app/create-bot/page.tsx
 "use client";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -9,7 +10,7 @@ type Category = { id: string; name: string };
 export default function CreateBotPage() {
   const router = useRouter();
 
-  /* نموذج البيانات */
+  // حالات النموذج
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -19,49 +20,34 @@ export default function CreateBotPage() {
     categoryId: "",
     isPublic: true,
   });
-
-  /* حالة المكوّن */
   const [categories, setCategories] = useState<Category[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  // ثيم وقائمة الموبايل
   const [darkMode, setDarkMode] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  /* جلب التصنيفات */
+  // جلب التصنيفات
   useEffect(() => {
-    (async () => {
-      try {
-        const res = await fetch("/api/categories");
-        if (res.ok) {
-          const data = await res.json();
-          setCategories(data);
-        }
-      } catch (err) {
-        console.error("Failed to fetch categories:", err);
-      }
-    })();
+    fetch("/api/categories")
+      .then((r) => r.json())
+      .then((data: Category[]) => setCategories(data))
+      .catch(console.error);
   }, []);
 
-  /* تغيّر الحقول */
-  const handleChange = (
-    e:
-      | React.ChangeEvent<HTMLInputElement>
-      | React.ChangeEvent<HTMLTextAreaElement>
-      | React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    const { name, value, type, checked } = e.target as HTMLInputElement;
-    setFormData((prev) => ({
-      ...prev,
+  const handleChange = (e: React.ChangeEvent<any>) => {
+    const { name, value, type, checked } = e.target;
+    setFormData((p) => ({
+      ...p,
       [name]: type === "checkbox" ? checked : value,
     }));
   };
 
-  /* إرسال النموذج */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
-
     try {
       const res = await fetch("/api/bots", {
         method: "POST",
@@ -69,13 +55,13 @@ export default function CreateBotPage() {
         body: JSON.stringify(formData),
       });
       if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Failed to create bot");
+        const err = await res.json();
+        throw new Error(err.error || "فشل الإنشاء");
       }
-      const data = await res.json();
-      router.push(`/chat/${data.id}`);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Unknown error");
+      const { id } = await res.json();
+      router.push(`/chat/${id}`);
+    } catch (e: any) {
+      setError(e.message);
     } finally {
       setLoading(false);
     }
@@ -83,70 +69,41 @@ export default function CreateBotPage() {
 
   return (
     <div
-      className="min-h-screen flex flex-col bg-gradient-to-br from-[#5f35aa] to-[#212121] text-white"
+      className="min-h-screen flex flex-col bg-gradient-to-br from-purple-700 to-indigo-900 text-white"
       style={{ overflowY: "hidden" }}
     >
-      <Header darkMode={darkMode} toggleTheme={() => setDarkMode(!darkMode)} />
+      {/* Header و MobileMenu */}
+      <Header
+        darkMode={darkMode}
+        toggleTheme={() => setDarkMode((m) => !m)}
+        onMenuToggle={() => setMenuOpen((o) => !o)}
+      />
       <MobileMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
 
-      <main className="flex-1 flex flex-col items-center justify-center px-4 py-10">
-        <div className="w-full max-w-lg bg-[#1e1e1e] p-6 rounded-lg shadow-lg">
-          <h1 className="text-2xl font-bold mb-6 text-center">إنشاء بوت جديد</h1>
+      {/* المحتوى */}
+      <main className="flex-1 flex items-center justify-center p-4 pt-20">
+        <form
+          onSubmit={handleSubmit}
+          className="w-full max-w-lg bg-black/40 backdrop-blur-sm p-8 rounded-xl shadow-xl space-y-6"
+        >
+          <h1 className="text-3xl font-bold text-center">إنشاء بوت جديد</h1>
+          {error && <p className="text-red-400 text-center">{error}</p>}
 
-          {error && <p className="mb-4 text-red-400 text-center">{error}</p>}
-
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <input
               name="name"
               value={formData.name}
               onChange={handleChange}
               required
               placeholder="اسم البوت"
-              className="w-full p-2 rounded bg-[#2c2c2c]"
+              className="p-3 rounded bg-white/10 placeholder-white focus:outline-none focus:ring-2 focus:ring-purple-300"
             />
-
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              required
-              placeholder="وصف مختصر"
-              rows={3}
-              className="w-full p-2 rounded bg-[#2c2c2c]"
-            />
-
-            <input
-              name="image"
-              value={formData.image}
-              onChange={handleChange}
-              placeholder="رابط صورة (اختياري)"
-              className="w-full p-2 rounded bg-[#2c2c2c]"
-            />
-
-            <textarea
-              name="personality"
-              value={formData.personality}
-              onChange={handleChange}
-              placeholder="الشخصية (اختياري)"
-              rows={2}
-              className="w-full p-2 rounded bg-[#2c2c2c]"
-            />
-
-            <input
-              name="accent"
-              value={formData.accent}
-              onChange={handleChange}
-              placeholder="اللهجة (اختياري)"
-              className="w-full p-2 rounded bg-[#2c2c2c]"
-            />
-
-            {/* اختيار التصنيف */}
             <select
               name="categoryId"
               value={formData.categoryId}
               onChange={handleChange}
               required
-              className="w-full p-2 rounded bg-[#2c2c2c]"
+              className="p-3 rounded bg-white/10 placeholder-white focus:outline-none focus:ring-2 focus:ring-purple-300"
             >
               <option value="">اختر التصنيف</option>
               {categories.map((c) => (
@@ -155,27 +112,63 @@ export default function CreateBotPage() {
                 </option>
               ))}
             </select>
+          </div>
 
-            {/* جعل البوت عامًا */}
-            <label className="flex items-center gap-2 mt-2">
-              <input
-                type="checkbox"
-                name="isPublic"
-                checked={formData.isPublic}
-                onChange={handleChange}
-              />
-              جعل البوت عامًا
-            </label>
+          <textarea
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+            rows={3}
+            required
+            placeholder="وصف مختصر"
+            className="w-full p-3 rounded bg-white/10 placeholder-white focus:outline-none focus:ring-2 focus:ring-purple-300"
+          />
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full p-3 rounded bg-blue-600 hover:bg-blue-700 transition"
-            >
-              {loading ? "يتم الإنشاء..." : "إنشاء البوت"}
-            </button>
-          </form>
-        </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <input
+              name="image"
+              value={formData.image}
+              onChange={handleChange}
+              placeholder="رابط صورة (اختياري)"
+              className="p-3 rounded bg-white/10 placeholder-white focus:outline-none focus:ring-2 focus:ring-purple-300"
+            />
+            <input
+              name="accent"
+              value={formData.accent}
+              onChange={handleChange}
+              placeholder="اللهجة (اختياري)"
+              className="p-3 rounded bg-white/10 placeholder-white focus:outline-none focus:ring-2 focus:ring-purple-300"
+            />
+          </div>
+
+          <textarea
+            name="personality"
+            value={formData.personality}
+            onChange={handleChange}
+            rows={2}
+            placeholder="الشخصية (اختياري)"
+            className="w-full p-3 rounded bg-white/10 placeholder-white focus:outline-none focus:ring-2 focus:ring-purple-300"
+          />
+
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              name="isPublic"
+              checked={formData.isPublic}
+              onChange={handleChange}
+              className="h-5 w-5 rounded bg-white/10 checked:bg-purple-500"
+            />
+            جعل البوت عامًا
+          </label>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-3 bg-purple-500 hover:bg-purple-600 rounded-lg font-semibold transition"
+          >
+            {loading ? "جاري الإنشاء..." : "إنشاء البوت"}
+          </button>
+        </form>
       </main>
     </div>
   );

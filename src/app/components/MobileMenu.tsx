@@ -1,6 +1,6 @@
 "use client";
-import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 
 interface MobileMenuProps {
   menuOpen: boolean;
@@ -8,78 +8,63 @@ interface MobileMenuProps {
 }
 
 export default function MobileMenu({ menuOpen, setMenuOpen }: MobileMenuProps) {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  useEffect(() => {
-    const hasToken = document.cookie.includes("token=");
-    setIsLoggedIn(hasToken);
-  }, []);
+  const links = [
+    { href: "/", label: "الرئيسية" },
+    { href: "/catalog", label: "الأقسام" },
+    { href: "/create-bot", label: "اصنع بوتك" },
+    { href: "/help", label: "المساعدة" },
+    { href: "/contact", label: "تواصل معنا" },
+  ];
 
   return (
-    <nav
-      className={`fixed top-0 right-0 w-64 h-full p-6 flex flex-col bg-gradient-to-br from-[#D8BFD8] to-[#4B0082] text-white shadow-2xl ${
-        menuOpen ? "translate-x-0" : "translate-x-full"
-      } transition-transform duration-300`}
+    <motion.nav
+      initial={{ x: "100%" }}
+      animate={{ x: menuOpen ? 0 : "100%" }}
+      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+      className="
+        fixed top-0 right-0 h-full w-64
+        backdrop-blur-lg bg-gradient-to-br from-purple-700/40 to-indigo-900/40
+        text-white p-6 flex flex-col
+        shadow-2xl
+      "
     >
-      <button className="self-end mb-4" onClick={() => setMenuOpen(false)}>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-6 w-6"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M6 18L18 6M6 6l12 12"
-          />
-        </svg>
+      {/* زر إغلاق */}
+      <button
+        className="self-end mb-6 p-2 rounded hover:bg-white/20 transition"
+        onClick={() => setMenuOpen(false)}
+      >
+        ✕
       </button>
 
-      <Link
-        href="/"
-        onClick={() => setMenuOpen(false)}
-        className="mb-3 text-lg hover:text-red-400"
-      >
-        الرئيسية
-      </Link>
+      {/* روابط القائمة */}
+      <ul className="flex-1 space-y-4">
+        {links.map((link) => (
+          <li key={link.href}>
+            <Link
+              href={link.href}
+              onClick={() => setMenuOpen(false)}
+              className="
+                block text-lg font-medium
+                px-3 py-2 rounded
+                hover:bg-white/20 transition
+              "
+            >
+              {link.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
 
-      <Link
-        href="/catalog"
-        onClick={() => setMenuOpen(false)}
-        className="mb-3 text-lg hover:text-red-400"
-      >
-        الأقسام (الكتالوج)
-      </Link>
-
-      {isLoggedIn && (
+      {/* أسفل القائمة */}
+      <div className="mt-auto pt-4 border-t border-white/20 space-y-3">
         <Link
-          href="/create-bot"
+          href="/settings"
           onClick={() => setMenuOpen(false)}
-          className="mb-3 text-lg hover:text-red-400"
+          className="block text-lg hover:text-purple-300 transition"
         >
-          اصنع البوت الخاص فيك !
-        </Link>
-      )}
-
-      <div className="mt-auto pt-4 border-t border-gray-400">
-        <Link
-          href="/help"
-          onClick={() => setMenuOpen(false)}
-          className="block text-lg mt-3 hover:text-red-400"
-        >
-          المساعدة
-        </Link>
-        <Link
-          href="/contact"
-          onClick={() => setMenuOpen(false)}
-          className="block text-lg mt-3 hover:text-red-400"
-        >
-          تواصل معنا
+          الإعدادات
         </Link>
       </div>
-    </nav>
+    </motion.nav>
   );
 }
