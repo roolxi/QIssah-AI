@@ -29,17 +29,14 @@ export default function BotCard({ bot }: BotCardProps) {
       >
         {/* صورة البوت */}
         <div className="w-[45%] h-full relative">
-          {/* جرّب هذا بدل <Image> للتأكد */}
-             <img
-               src={bot.image}
-               alt={bot.name}
-               className="w-full h-full object-cover"
-             />
-
+          <img
+            src={bot.image}
+            alt={bot.name}
+           className="absolute inset-0 w-full h-full object-cover"
+           />
+        <div className="absolute inset-0 w-2/3 bg-gradient-to-l from-[#212121] via-[#212121]/80 to-transparent" />
         </div>
 
-        {/* تدرّج داكن */}
-        <div className="absolute inset-0 w-2/3 bg-gradient-to-l from-[#212121] via-[#212121]/80 to-transparent" />
 
         {/* المحتوى */}
         <div className="relative w-[55%] p-4 flex flex-col justify-between text-white z-10 ml-auto">
