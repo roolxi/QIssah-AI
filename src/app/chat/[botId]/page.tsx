@@ -171,7 +171,21 @@ export default function ChatBotIdPage() {
                 <p className="font-bold text-sm">
                   {msg.sender === "bot" ? bot.name : "YOU"}
                 </p>
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {/* هنا الفتحة: أي نص مائل يصير لونه سيان */}
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  components={{
+                    em: ({ children, ...props }) => (
+                      <em
+                        {...props}
+                        style={{ color: "cyan" }}
+                        className="italic"
+                      >
+                        {children}
+                      </em>
+                    ),
+                  }}
+                >
                   {msg.text}
                 </ReactMarkdown>
               </div>
