@@ -1,3 +1,4 @@
+// src/app/chat/[botId]/page.tsx
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "next/navigation";
@@ -23,40 +24,35 @@ export default function ChatBotIdPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // State for messages and input
   const [messages, setMessages] = useState<
     { sender: "user" | "bot"; text: string }[]
   >([]);
   const [newMessage, setNewMessage] = useState("");
   const chatRef = useRef<HTMLDivElement>(null);
 
-  // Theme and menu state
   const [darkMode, setDarkMode] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // User profile data
   const [userProfile, setUserProfile] = useState({ botName: "", bio: "" });
 
   // Fetch bot data
   useEffect(() => {
-    const fetchBot = async () => {
+    (async () => {
       try {
-        const response = await fetch(`/api/bots/${botId}`);
-        if (!response.ok) throw new Error("Failed to fetch bot");
-        const data = await response.json();
-        setBot(data);
-      } catch (err) {
-        setError((err as Error).message);
+        const res = await fetch(`/api/bots/${botId}`);
+        if (!res.ok) throw new Error("Failed to fetch bot");
+        setBot(await res.json());
+      } catch (e: any) {
+        setError(e.message);
       } finally {
         setLoading(false);
       }
-    };
-    fetchBot();
+    })();
   }, [botId]);
 
   // Fetch user profile
   useEffect(() => {
-    const fetchUserProfile = async () => {
+    (async () => {
       try {
         const res = await fetch("/api/auth/me");
         if (res.ok) {
@@ -66,23 +62,18 @@ export default function ChatBotIdPage() {
             bio: data.bio || "",
           });
         }
-      } catch (err) {
-        console.error("Failed to fetch user profile:", err);
-      }
-    };
-    fetchUserProfile();
+      } catch {}
+    })();
   }, []);
 
-  // Handle sending a message
+  // Send message handler
   const handleSendMessage = async () => {
     if (!newMessage.trim()) return;
-
     const userMsg = { sender: "user" as const, text: newMessage };
     setMessages((prev) => [...prev, userMsg]);
     setNewMessage("");
-
     try {
-      const response = await fetch("/api/chat", {
+      const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -96,144 +87,123 @@ export default function ChatBotIdPage() {
           conversation: [...messages, userMsg],
         }),
       });
-      if (!response.ok) throw new Error("Failed to get response from bot");
-      const data = await response.json();
-      setMessages((prev) => [...prev, { sender: "bot", text: data.reply }]);
-    } catch (error) {
-      console.error("Error:", error);
-    }
+      if (!res.ok) throw new Error("Bot response failed");
+      const { reply } = await res.json();
+      setMessages((prev) => [...prev, { sender: "bot", text: reply }]);
+    } catch {}
   };
 
-  // Auto-scroll to the latest message
+  // Auto-scroll
   useEffect(() => {
     if (chatRef.current) {
       chatRef.current.scrollTop = chatRef.current.scrollHeight;
     }
   }, [messages]);
 
-  if (loading) return <p className="text-center mt-10 text-lg">Loading bot details...</p>;
-  if (error) return <p className="text-center mt-10 text-red-500">Error: {error}</p>;
-  if (!bot) return <p className="text-center mt-10 text-gray-400">Bot not found.</p>;
+  if (loading)
+    return (
+      <p className="text-center mt-10 text-lg">Loading bot details...</p>
+    );
+  if (error)
+    return (
+      <p className="text-center mt-10 text-red-500">Error: {error}</p>
+    );
+  if (!bot)
+    return (
+      <p className="text-center mt-10 text-gray-400">Bot not found.</p>
+    );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#4A2C6B] to-[#7B4EAD] text-white flex flex-col">
-      {/* Header */}
+    <div
+      className="min-h-screen flex flex-col bg-gradient-to-br from-[#4A2C6B] to-[#7B4EAD] text-white"
+      style={{ overflowY: "hidden" }}
+    >
       <Header
         darkMode={darkMode}
-        toggleTheme={() => setDarkMode(!darkMode)}
-        
+        toggleTheme={() => setDarkMode((m) => !m)}
+        onMenuToggle={() => setMenuOpen((o) => !o)}
       />
       <MobileMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
 
-      {/* Chat Header (Back Button) */}
-      <div className="p-4">
-        <button
-          onClick={() => window.history.back()}
-          className="text-white text-lg"
-        >
-          {"< back"}
-        </button>
-      </div>
+      <div className="pt-16 flex-1 flex flex-col">
+        {/* Back Button */}
+        <div className="p-4">
+          <button
+            onClick={() => history.back()}
+            className="text-white text-lg"
+          >
+            &lt; back
+          </button>
+        </div>
 
-      {/* Chat Container */}
-      <main className="max-w-4xl mx-auto px-4 py-8 flex-1 flex flex-col"> {/* Added closing </main> here */}
-        {/* Bot Name and Description (Optional, can be hidden on mobile) */}
-        <div className="mb-4 hidden md:block">
-          <h1 className="text-2xl font-bold mb-2">{bot.name}</h1>
+        {/* Chat Header */}
+        <div className="mb-4 hidden md:block px-6">
+          <h1 className="text-2xl font-bold">{bot.name}</h1>
           <p className="text-sm">{bot.description}</p>
         </div>
 
-        {/* Chat Area in a Fixed Container */}
-        <div className="max-w-4xl mx-auto px-4 flex-1 flex flex-col">
-          <div
-            ref={chatRef}
-            className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-hide"
-            style={{ maxHeight: "calc(100vh - 300px)" }} // Container with fixed height
-          >
-            {messages.map((message, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-                className={`flex items-start gap-2 ${
-                  message.sender === "user" ? "justify-end" : "justify-start"
+        {/* Messages */}
+        <div className="flex-1 overflow-y-auto p-4" ref={chatRef}>
+          {messages.map((msg, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className={`flex items-start gap-2 mb-4 ${
+                msg.sender === "user" ? "justify-end" : "justify-start"
+              }`}
+            >
+              {msg.sender === "bot" && (
+                <img
+                  src={bot.image || "/default-bot-avatar.png"}
+                  alt="bot avatar"
+                  className="w-10 h-10 rounded-full object-cover"
+                />
+              )}
+              <div
+                className={`p-3 rounded-lg max-w-xs break-words ${
+                  msg.sender === "user"
+                    ? "bg-[#3C3C3C] self-end"
+                    : "bg-[#8E6FB0] self-start"
                 }`}
               >
-                {message.sender === "bot" && (
-                  <img
-                    src={bot.image || "/default-bot-avatar.png"}
-                    alt={`${bot.name} Avatar`}
-                    className="w-12 h-12 rounded-full object-cover"
-                  />
-                )}
-                <div
-                  className={`p-3 rounded-lg shadow ${
-                    message.sender === "user"
-                      ? "bg-[#3C3C3C] text-white self-end mr-12"
-                      : "bg-[#8E6FB0] text-white self-start ml-12"
-                  }`}
-                >
-                  <p className="font-bold text-sm">
-                    {message.sender === "bot" ? bot.name : "YOU"}
-                  </p>
-                  <p className="text-sm">
-                    <ReactMarkdown
-                      remarkPlugins={[remarkGfm]}
-                      components={
-                        message.sender === "bot"
-                          ? {
-                              em: ({ ...props }) => (
-                                <em style={{ color: "lightblue" }} {...props} />
-                              ),
-                            }
-                          : {}
-                      }
-                    >
-                      {message.text}
-                    </ReactMarkdown>
-                  </p>
-                </div>
-                {message.sender === "user" && (
-                  <img
-                    src="/default-user-avatar.png"
-                    alt="User Avatar"
-                    className="w-12 h-12 rounded-full object-cover"
-                  />
-                )}
-              </motion.div>
-            ))}
-          </div>
+                <p className="font-bold text-sm">
+                  {msg.sender === "bot" ? bot.name : "YOU"}
+                </p>
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {msg.text}
+                </ReactMarkdown>
+              </div>
+              {msg.sender === "user" && (
+                <img
+                  src="/default-user-avatar.png"
+                  alt="user avatar"
+                  className="w-10 h-10 rounded-full object-cover"
+                />
+              )}
+            </motion.div>
+          ))}
         </div>
 
-        {/* Input Area with Outer Box Fading into Background */}
-        <div
-          className="p-4 flex items-center gap-2"
-          style={{
-            background: "transparent",
-            boxShadow: "0px 0px 20px rgba(0, 0, 0, 0.2), 0px 0px 20px rgba(0, 0, 0, 0.2), 0px 0px 20px rgba(0, 0, 0, 0.2), 0px 0px 20px rgba(0, 0, 0, 0.2)",
-            borderRadius: "8px",
-          }}
-        >
+        {/* Input */}
+        <div className="p-4 bg-white/10 backdrop-blur-sm mx-4 mb-4 rounded-lg flex items-center gap-2">
           <input
             type="text"
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
             placeholder="Type your message..."
-            className="flex-1 p-2 rounded-lg bg-[#7B4EAD] text-white placeholder-white border-none focus:outline-none"
-            style={{
-              boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.2), 0px 0px 10px rgba(0, 0, 0, 0.2), 0px 0px 10px rgba(0, 0, 0, 0.2), 0px 0px 10px rgba(0, 0, 0, 0.2)",
-            }}
+            className="flex-1 p-2 rounded bg-transparent placeholder-white focus:outline-none"
           />
           <button
             onClick={handleSendMessage}
-            className="p-2 bg-[#7B4EAD] rounded-full border-none hover:bg-[#6A3EAD] transition-colors"
+            className="p-2 bg-purple-600 rounded-full hover:bg-purple-700 transition"
           >
-            <FaPaperPlane className="text-white" size={20} />
+            <FaPaperPlane className="text-white" />
           </button>
         </div>
-      </main> {/* Added closing </main> tag */}
+      </div>
     </div>
   );
 }
