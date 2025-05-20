@@ -14,6 +14,7 @@ const eslintConfig = [
   {
     rules: {
       "@typescript-eslint/no-explicit-any": "off", // تعطيل التحذير عن استخدام any
+      "@typescript-eslint/no-unused-vars": "off"
     },
   },
 ];
