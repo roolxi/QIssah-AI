@@ -1,155 +1,182 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Header from "@/app/components/Header";
+import MobileMenu from "@/app/components/MobileMenu";
+
+type Category = { id: string; name: string };
 
 export default function CreateBotPage() {
   const router = useRouter();
+
+  /* نموذج البيانات */
   const [formData, setFormData] = useState({
     name: "",
     description: "",
     image: "",
     personality: "",
     accent: "",
+    categoryId: "",
     isPublic: true,
   });
+
+  /* حالة المكوّن */
+  const [categories, setCategories] = useState<Category[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
+  const [menuOpen, setMenuOpen] = useState(false);
 
+  /* جلب التصنيفات */
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch("/api/categories");
+        if (res.ok) {
+          const data = await res.json();
+          setCategories(data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch categories:", err);
+      }
+    })();
+  }, []);
+
+  /* تغيّر الحقول */
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e:
+      | React.ChangeEvent<HTMLInputElement>
+      | React.ChangeEvent<HTMLTextAreaElement>
+      | React.ChangeEvent<HTMLSelectElement>
   ) => {
-    const target = e.target as HTMLInputElement;
-    const { name, value, type, checked } = target;
-    const fieldValue = type === "checkbox" ? checked : value;
+    const { name, value, type, checked } = e.target as HTMLInputElement;
     setFormData((prev) => ({
       ...prev,
-      [name]: fieldValue,
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
+  /* إرسال النموذج */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
+
     try {
-      const response = await fetch("/api/bots", {
+      const res = await fetch("/api/bots", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-
-      if (!response.ok) {
-        const data = await response.json();
+      if (!res.ok) {
+        const data = await res.json();
         throw new Error(data.error || "Failed to create bot");
       }
-
-      const data = await response.json();
+      const data = await res.json();
       router.push(`/chat/${data.id}`);
     } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError("An unknown error occurred");
-      }
+      setError(err instanceof Error ? err.message : "Unknown error");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white p-4">
-      <h1 className="text-3xl font-bold mb-6">Create a New Bot</h1>
-      {error && <p className="mb-4 text-red-500">{error}</p>}
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-md bg-gray-800 p-6 rounded-lg shadow-md"
-      >
-        <div className="mb-4">
-          <label htmlFor="name" className="block mb-1">
-            Bot Name
-          </label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-            className="w-full p-2 rounded bg-gray-700 border border-gray-600"
-          />
+    <div
+      className="min-h-screen flex flex-col bg-gradient-to-br from-[#5f35aa] to-[#212121] text-white"
+      style={{ overflowY: "hidden" }}
+    >
+      <Header darkMode={darkMode} toggleTheme={() => setDarkMode(!darkMode)} />
+      <MobileMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
+
+      <main className="flex-1 flex flex-col items-center justify-center px-4 py-10">
+        <div className="w-full max-w-lg bg-[#1e1e1e] p-6 rounded-lg shadow-lg">
+          <h1 className="text-2xl font-bold mb-6 text-center">إنشاء بوت جديد</h1>
+
+          {error && <p className="mb-4 text-red-400 text-center">{error}</p>}
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <input
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              required
+              placeholder="اسم البوت"
+              className="w-full p-2 rounded bg-[#2c2c2c]"
+            />
+
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              required
+              placeholder="وصف مختصر"
+              rows={3}
+              className="w-full p-2 rounded bg-[#2c2c2c]"
+            />
+
+            <input
+              name="image"
+              value={formData.image}
+              onChange={handleChange}
+              placeholder="رابط صورة (اختياري)"
+              className="w-full p-2 rounded bg-[#2c2c2c]"
+            />
+
+            <textarea
+              name="personality"
+              value={formData.personality}
+              onChange={handleChange}
+              placeholder="الشخصية (اختياري)"
+              rows={2}
+              className="w-full p-2 rounded bg-[#2c2c2c]"
+            />
+
+            <input
+              name="accent"
+              value={formData.accent}
+              onChange={handleChange}
+              placeholder="اللهجة (اختياري)"
+              className="w-full p-2 rounded bg-[#2c2c2c]"
+            />
+
+            {/* اختيار التصنيف */}
+            <select
+              name="categoryId"
+              value={formData.categoryId}
+              onChange={handleChange}
+              required
+              className="w-full p-2 rounded bg-[#2c2c2c]"
+            >
+              <option value="">اختر التصنيف</option>
+              {categories.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+
+            {/* جعل البوت عامًا */}
+            <label className="flex items-center gap-2 mt-2">
+              <input
+                type="checkbox"
+                name="isPublic"
+                checked={formData.isPublic}
+                onChange={handleChange}
+              />
+              جعل البوت عامًا
+            </label>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full p-3 rounded bg-blue-600 hover:bg-blue-700 transition"
+            >
+              {loading ? "يتم الإنشاء..." : "إنشاء البوت"}
+            </button>
+          </form>
         </div>
-        <div className="mb-4">
-          <label htmlFor="description" className="block mb-1">
-            Description
-          </label>
-          <textarea
-            id="description"
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            required
-            className="w-full p-2 rounded bg-gray-700 border border-gray-600"
-            rows={3}
-          />
-        </div>
-        <div className="mb-4">
-          <label htmlFor="image" className="block mb-1">
-            Image URL (optional)
-          </label>
-          <input
-            type="text"
-            id="image"
-            name="image"
-            value={formData.image}
-            onChange={handleChange}
-            className="w-full p-2 rounded bg-gray-700 border border-gray-600"
-          />
-        </div>
-        <div className="mb-4">
-          <label htmlFor="personality" className="block mb-1">
-            Personality (optional)
-          </label>
-          <textarea
-            id="personality"
-            name="personality"
-            value={formData.personality}
-            onChange={handleChange}
-            className="w-full p-2 rounded bg-gray-700 border border-gray-600"
-            rows={2}
-          />
-        </div>
-        <div className="mb-4">
-          <label htmlFor="accent" className="block mb-1">
-            Accent (optional)
-          </label>
-          <input
-            type="text"
-            id="accent"
-            name="accent"
-            value={formData.accent}
-            onChange={handleChange}
-            className="w-full p-2 rounded bg-gray-700 border border-gray-600"
-          />
-        </div>
-        <div className="mb-4 flex items-center">
-          <input
-            type="checkbox"
-            id="isPublic"
-            name="isPublic"
-            checked={formData.isPublic}
-            onChange={handleChange}
-            className="mr-2"
-          />
-          <label htmlFor="isPublic">Make Bot Public</label>
-        </div>
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-lg transition"
-        >
-          {loading ? "Creating..." : "Create Bot"}
-        </button>
-      </form>
+      </main>
     </div>
   );
 }
