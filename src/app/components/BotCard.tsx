@@ -29,13 +29,13 @@ export default function BotCard({ bot }: BotCardProps) {
       >
         {/* صورة البوت */}
         <div className="w-[45%] h-full relative">
-          <Image
-            src={bot.image}
-            alt={bot.name}
-            fill
-            style={{ objectFit: "cover" }}
-            className="absolute inset-0"
-          />
+          {/* جرّب هذا بدل <Image> للتأكد */}
+             <img
+               src={bot.image}
+               alt={bot.name}
+               className="w-full h-full object-cover"
+             />
+
         </div>
 
         {/* تدرّج داكن */}
