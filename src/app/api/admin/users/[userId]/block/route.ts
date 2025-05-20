@@ -17,6 +17,6 @@ export async function PATCH(
 
     return NextResponse.json({ ok: true });
   } catch /* istanbul ignore next */ 
-  (e) { return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+   { return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 }
