@@ -12,6 +12,8 @@ export type Bot = {
   name: string;
   description: string;
   image: string;
+  likesCount: number;           // أضف
+  creator: { username: string } // أضف
 };
 
 export default function HomePage() {
