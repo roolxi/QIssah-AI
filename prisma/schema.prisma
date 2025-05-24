@@ -52,6 +52,7 @@ model Bot {
   updatedAt   DateTime  @updatedAt
   likesCount  Int       @default(0)
   likes       BotLike[]
+  viewsCount  Int       @default(0)
 
   // صاحب البوت
   creatorId String? @db.Uuid
