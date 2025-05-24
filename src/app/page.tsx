@@ -14,6 +14,7 @@ export type Bot = {
   description: string;
   image: string;
   likesCount: number;
+  viewsCount: number;
   creator: { username: string };
   category: { id: string; name: string };
 };
