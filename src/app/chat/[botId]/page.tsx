@@ -1,14 +1,11 @@
 // src/app/chat/[botId]/page.tsx
 "use client";
-
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, MouseEvent } from "react";
 import { useParams } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { motion } from "framer-motion";
-import { FaPaperPlane } from "react-icons/fa";
-import Header from "@/app/components/Header";
-import MobileMenu from "@/app/components/MobileMenu";
+import { FaPaperPlane, FaBars, FaEllipsisV, FaShareAlt, FaComment, FaHome, FaPlusCircle, FaRobot, FaHeart, FaStar, FaUser } from "react-icons/fa";
 
 type Message = { sender: "user" | "bot"; text: string };
 
@@ -17,33 +14,27 @@ export type Bot = {
   name: string;
   description: string;
   image?: string;
-  personality: string;
+  personality?: string;
   accent?: string;
 };
 
 export default function ChatBotIdPage() {
-  /* ────────── حالة الصفحة ────────── */
   const { botId } = useParams() as { botId: string };
   const [bot, setBot] = useState<Bot | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
-  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-
-  /* واجهة المستخدم */
-  const [darkMode, setDarkMode] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
   const chatRef = useRef<HTMLDivElement>(null);
 
-  /* بيانات المستخدم (لإرسالها إلى الـ API) */
-  const [userProfile, setUserProfile] = useState({ botName: "", bio: "" });
-
-  /* ────────── جلب بيانات البوت ────────── */
+  // Fetch bot
   useEffect(() => {
     (async () => {
       try {
         const res = await fetch(`/api/bots/${botId}`);
-        if (!res.ok) throw new Error("فشل جلب بيانات البوت");
+        if (!res.ok) throw new Error("Failed to load bot");
         setBot(await res.json());
       } catch (e: any) {
         setError(e.message);
@@ -53,28 +44,17 @@ export default function ChatBotIdPage() {
     })();
   }, [botId]);
 
-  /* ────────── جلب بيانات المستخدم ────────── */
+  // Autoscroll
   useEffect(() => {
-    (async () => {
-      try {
-        const res = await fetch("/api/auth/me");
-        if (res.ok) {
-          const data = await res.json();
-          setUserProfile({
-            botName: data.botName || "",
-            bio: data.bio || "",
-          });
-        }
-      } catch {/* تجاهل */ }
-    })();
-  }, []);
+    if (chatRef.current) {
+      chatRef.current.scrollTop = chatRef.current.scrollHeight;
+    }
+  }, [messages]);
 
-  /* ────────── إرسال رسالة ────────── */
-  const handleSendMessage = async () => {
+  const handleSend = async () => {
     if (!newMessage.trim()) return;
-
     const userMsg: Message = { sender: "user", text: newMessage };
-    setMessages(prev => [...prev, userMsg]);
+    setMessages((m) => [...m, userMsg]);
     setNewMessage("");
 
     try {
@@ -86,123 +66,220 @@ export default function ChatBotIdPage() {
             personality: bot?.personality,
             accent: bot?.accent,
             name: bot?.name,
-            userName: userProfile.botName,
-            bio: userProfile.bio,
           },
           conversation: [...messages, userMsg],
         }),
       });
-      if (!res.ok) throw new Error("فشل استجابة البوت");
+      if (!res.ok) throw new Error("Bot failed");
       const { reply } = await res.json();
-      setMessages(prev => [...prev, { sender: "bot", text: reply }]);
-    } catch (e: any) {
-      setError(e.message);
+      setMessages((m) => [...m, { sender: "bot", text: reply }]);
+    } catch {
+      // ignore
     }
   };
 
-  /* ────────── تمرير تلقائي لآخر رسالة ────────── */
-  useEffect(() => {
-    if (chatRef.current) chatRef.current.scrollTop = chatRef.current.scrollHeight;
-  }, [messages]);
+  const toggleMenu = () => setMenuOpen((o) => !o);
 
-  /* ────────── شاشات التحميل والأخطاء ────────── */
-  if (loading) return <p className="text-center mt-10">جاري تحميل البوت…</p>;
-  if (error)   return <p className="text-center mt-10 text-red-500">{error}</p>;
-  if (!bot)    return <p className="text-center mt-10 text-gray-400">البوت غير موجود.</p>;
+  if (loading) return <p className="loading">Loading…</p>;
+  if (error)   return <p className="loading error">{error}</p>;
+  if (!bot)    return <p className="loading">Bot not found.</p>;
 
-  /* ────────── واجهة المحادثة ────────── */
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-[#5e2ea3] to-black text-white overflow-hidden">
-      {/* رأس الصفحة مع قائمة الموبايل */}
-      <Header
-        darkMode={darkMode}
-        toggleTheme={() => setDarkMode(d => !d)}
-        onMenuToggle={() => setMenuOpen(o => !o)}
-      />
-      <MobileMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
-
-      {/* محتوى المحادثة */}
-      <div className="pt-16 flex-1 flex flex-col relative">
-        {/* عنوان البوت ووصفه */}
-        <div className="px-6 pb-4">
-          <h1 className="text-2xl font-bold">{bot.name}</h1>
-          <p className="text-sm text-gray-300">{bot.description}</p>
+    <div className="container">
+      {/* Sidebar */}
+      <aside className={`sidebar ${menuOpen ? "open" : ""}`}>
+        <div className="menu-section">
+          <div className="home-header">
+            <FaBars className="menu-icon" onClick={toggleMenu} />
+            <div>Qissah.AI</div>
+          </div>
+          <div className="menu-item"><FaHome /> Home</div>
+          <div className="menu-item"><FaComment /> Chats</div>
+          <div className="menu-separator" />
+          <div className="menu-item"><FaPlusCircle /> Create Chatbot</div>
+          <div className="menu-item"><FaRobot /> My Chatbots</div>
+          <div className="menu-item"><FaHeart /> Favorites</div>
+          <div className="menu-item"><FaStar /> Top 10 Bots</div>
+          <div className="menu-separator" />
         </div>
+        <div className="sign-in">Sign In</div>
+      </aside>
 
-        {/* الرسائل */}
-        <div ref={chatRef} className="flex-1 overflow-y-auto px-4 space-y-4">
-          {messages.map((msg, idx) => (
+      {/* Main chat area */}
+      <main className="main">
+        <header className="topbar">
+          <div className="logo"><span>QISS</span>AH.AI</div>
+          <div className="icons">
+            <div className="icon-btn" title="Share"><FaShareAlt /></div>
+            <FaEllipsisV className="options-icon" />
+            <img className="profile" src={bot.image || "/default-bot-avatar.png"} alt="Bot" />
+          </div>
+        </header>
+
+        <div className="chat-box" ref={chatRef}>
+          {messages.map((msg, i) => (
             <motion.div
-              key={idx}
+              key={i}
+              className="message"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
-              className={`flex items-start gap-3 max-w-2xl mx-auto ${
-                msg.sender === "user" ? "justify-end" : "justify-start"
-              }`}
             >
-              {msg.sender === "bot" && (
-                <img
-                  src={bot.image || "/default-bot-avatar.png"}
-                  alt={bot.name}
-                  className="w-10 h-10 rounded-xl object-cover"
-                />
-              )}
-
-              <div
-                className={`rounded-2xl px-4 py-3 text-sm break-words ${
-                  msg.sender === "user" ? "bg-white/20" : "bg-white/10"
-                }`}
-              >
-                <p className="font-bold text-xs mb-1 text-gray-200">
-                  {msg.sender === "bot" ? bot.name : "YOU"}
-                </p>
-                <ReactMarkdown
-                  remarkPlugins={[remarkGfm]}
-                  components={{
-                    em: ({ children, ...props }) => (
-                      <em {...props} style={{ color: "#00eaff" }} className="italic">
-                        {children}
-                      </em>
-                    ),
-                  }}
-                >
-                  {msg.text}
-                </ReactMarkdown>
+              <img
+                src={msg.sender === "bot" ? bot.image || "/default-bot-avatar.png" : "/default-user-avatar.png"}
+                alt={msg.sender}
+              />
+              <div className="text">
+                <div className="name">{msg.sender === "bot" ? bot.name : "YOU"}</div>
+                <div className="content">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {msg.text}
+                  </ReactMarkdown>
+                </div>
               </div>
-
-              {msg.sender === "user" && (
-                <img
-                  src="/default-user-avatar.png"
-                  alt="You"
-                  className="w-10 h-10 rounded-xl object-cover"
-                />
-              )}
             </motion.div>
           ))}
         </div>
 
-        {/* شريط الإدخال */}
-        <div className="absolute bottom-0 left-0 right-0 px-4 py-4">
-          <div className="max-w-2xl mx-auto flex items-center bg-[#512d91] rounded-full px-4 py-2">
-            <input
-              type="text"
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-              placeholder="اكتب رسالتك..."
-              className="flex-1 bg-transparent text-white placeholder-gray-300 focus:outline-none text-sm"
-            />
-            <button
-              onClick={handleSendMessage}
-              className="ml-2 w-10 h-10 rounded-full bg-purple-700 hover:bg-purple-800 flex items-center justify-center"
-              title="إرسال"
-            >
-              <FaPaperPlane />
-            </button>
-          </div>
+        <div className="input-bar">
+          <input
+            type="text"
+            placeholder="اكتب رسالتك..."
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSend()}
+          />
+          <button onClick={handleSend} title="إرسال">
+            <FaPaperPlane />
+          </button>
         </div>
-      </div>
+      </main>
+
+      {/* Scoped CSS */}
+      <style jsx>{`
+        /* container */
+        .container {
+          display: flex;
+          height: 100vh;
+          background: linear-gradient(to bottom, #5e2ea3, #000);
+          color: white;
+          overflow: hidden;
+        }
+
+        /* loading */
+        .loading {
+          margin: auto;
+          font-size: 1.2rem;
+        }
+        .error { color: #ff6b6b;}
+
+        /* sidebar */
+        .sidebar {
+          width: 180px;
+          background: linear-gradient(to bottom, rgba(255,255,255,0.15), rgba(0,0,0,0.15));
+          padding: 20px 12px;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          transition: transform 0.3s ease;
+        }
+        .sidebar.open { transform: translateX(0); }
+        @media (max-width: 768px) {
+          .sidebar { transform: translateX(-100%); position: absolute; z-index: 100; }
+        }
+        .menu-section { display: flex; flex-direction: column; gap: 12px; }
+        .home-header { display: flex; align-items: center; font-size:17px; font-weight:bold; margin-bottom:25px; }
+        .menu-icon { font-size:20px; margin-right:8px; cursor: pointer; }
+        .menu-item { display:flex; align-items:center; gap:10px; font-size:13.5px; padding:6px 8px; cursor:pointer; transition: background 0.3s;}
+        .menu-item:hover { background: rgba(255,255,255,0.1); }
+        .menu-separator { height:1px; background:rgba(255,255,255,0.2); margin:10px 0;}
+        .sign-in { background:white; color:#222; font-weight:bold; padding:8px; text-align:center; cursor:pointer; transition: background 0.3s; font-size:13px;}
+        .sign-in:hover { background:#eee; }
+
+        /* main */
+        .main { flex:1; display:flex; flex-direction:column; position:relative; }
+
+        /* topbar */
+        .topbar { display:flex; justify-content:space-between; align-items:center; padding:15px 30px; }
+        .logo { font-size:28px; font-weight:bold; }
+        .logo span { color:#00d2ff; }
+        .icons { display:flex; align-items:center; gap:15px; }
+        .icon-btn { background:rgba(255,255,255,0.1); border-radius:50%; padding:8px; cursor:pointer; transition: background 0.3s; }
+        .icon-btn:hover { background:rgba(255,255,255,0.3); }
+        .options-icon { font-size:24px; cursor:pointer; }
+        .profile { width:35px; height:35px; border-radius:50%; object-fit:cover; }
+
+        /* chat box */
+        .chat-box {
+          flex:1;
+          padding:0 20px;
+          overflow-y:auto;
+          margin-bottom:100px;
+          display:flex;
+          flex-direction:column;
+          align-items:center;
+        }
+
+        .message {
+          display:flex;
+          align-items:center;
+          background:rgba(255,255,255,0.15);
+          border-radius:25px;
+          padding:15px;
+          margin:20px 0;
+          max-width:600px;
+          width:100%;
+          animation: fadeIn 0.3s ease-out;
+        }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(10px);} to { opacity:1; transform:translateY(0);} }
+
+        .message img {
+          width:60px; height:60px; border-radius:15px; margin-right:15px; object-fit:cover;
+        }
+        .text { display:flex; flex-direction:column; }
+        .name { font-weight:bold; font-size:16px; margin-bottom:5px; }
+        .content { font-size:14px; line-height:1.6; }
+
+        /* input bar */
+        .input-bar {
+          position:absolute;
+          bottom:30px;
+          left:50%;
+          transform:translateX(-50%);
+          width:100%; max-width:600px;
+          display:flex; align-items:center;
+        }
+        .input-bar input {
+          flex:1;
+          padding:18px 25px;
+          border:none;
+          border-radius:9999px;
+          background:#512d91;
+          font-size:16px;
+          color:white;
+          outline:none;
+        }
+        .input-bar button {
+          margin-left:10px;
+          width:55px; height:55px;
+          background:#512d91;
+          border:none;
+          border-radius:50%;
+          display:flex; align-items:center; justify-content:center;
+          cursor:pointer;
+          box-shadow:0 0 8px rgba(0,0,0,0.3);
+          transition:background 0.3s;
+        }
+        .input-bar button:hover { background:#6b34cc; }
+        .input-bar button :global(svg) { color:white; font-size:28px; }
+
+        /* responsive */
+        @media (max-width: 768px) {
+          .sidebar { display: none; }
+          .message { max-width:90%; }
+          .chat-box { padding:0 10px; }
+        }
+      `}</style>
     </div>
   );
 }
