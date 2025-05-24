@@ -28,39 +28,31 @@ export default function HomePage() {
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    fetch("/api/bots")
-      .then((res) => res.json())
-      .then(setBots)
-      .catch(console.error);
-    fetch("/api/categories")
-      .then((res) => res.json())
-      .then(setCategories)
-      .catch(console.error);
+    fetch("/api/bots").then(r => r.json()).then(setBots).catch(console.error);
+    fetch("/api/categories").then(r => r.json()).then(setCategories).catch(console.error);
   }, []);
 
-  const toggleTheme = () => setDarkMode((m) => !m);
-  const displayed = selectedCat
-    ? bots.filter((b) => b.category.id === selectedCat)
-    : bots;
+  const toggleTheme = () => setDarkMode(m => !m);
+  const displayed = selectedCat ? bots.filter(b => b.category.id === selectedCat) : bots;
 
   return (
     <div
-      className={`min-h-screen w-full transition-colors duration-500 ${
-        darkMode
-          ? "bg-gradient-to-br from-[#5f35aa] via-[#7f47c0] to-[#212121]"
-          : "bg-gray-100 text-gray-900"
-      }`}
-      style={{ overflowY: "hidden" }}
+      className="min-h-screen w-full transition-colors duration-500"
+      style={{
+        overflowY: "hidden",
+        background: darkMode
+          ? "linear-gradient(to bottom right, #5f35aa 0%, #5f35aa 50%, #212121 100%)"
+          : undefined,
+      }}
     >
       <Header
         darkMode={darkMode}
         toggleTheme={toggleTheme}
-        onMenuToggle={() => setMenuOpen((o) => !o)}
+        onMenuToggle={() => setMenuOpen(o => !o)}
       />
       <MobileMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
 
       <main className="pt-16 px-4 py-8 md:px-8 md:py-10 space-y-6">
-        {/* فلترة التصنيفات */}
         <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-2">
           <button
             onClick={() => setSelectedCat("")}
@@ -70,7 +62,7 @@ export default function HomePage() {
           >
             الكل
           </button>
-          {categories.map((c) => (
+          {categories.map(c => (
             <button
               key={c.id}
               onClick={() => setSelectedCat(c.id)}
@@ -101,7 +93,7 @@ export default function HomePage() {
               scrollBehavior: "smooth",
             }}
           >
-            {displayed.map((bot) => (
+            {displayed.map(bot => (
               <div
                 key={bot.id}
                 className="min-w-[80vw] sm:min-w-[60vw] md:min-w-[40vw] lg:min-w-[33vw] xl:min-w-[25vw]"
