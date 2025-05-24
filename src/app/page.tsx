@@ -47,7 +47,7 @@ export default function HomePage() {
     <div
       className={`min-h-screen w-full transition-colors duration-500 ${
         darkMode
-          ? "bg-gradient-to-br from-[#5f35aa] to-[#212121]"
+          ? "bg-gradient-to-br from-[#5f35aa] via-[#7f47c0] to-[#212121]"
           : "bg-gray-100 text-gray-900"
       }`}
       style={{ overflowY: "hidden" }}
