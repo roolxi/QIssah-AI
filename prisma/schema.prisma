@@ -1,0 +1,139 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/**
+ * ───────────────────────────*
+ * 1) USERS                   *
+ * ───────────────────────────
+ */
+model User {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  username  String   @unique
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // معلومات إضافية
+  bio     String?
+  botName String?
+
+  // صلاحيات ولوحة تحكّم
+  role    Role    @default(USER)
+  blocked Boolean @default(false)
+
+  // العلاقات
+  bots          Bot[]          @relation("UserBots")
+  conversations Conversation[]
+  BotLike       BotLike[]
+}
+
+/**
+ * ───────────────────────────*
+ * 2) BOTS                    *
+ * ───────────────────────────
+ */
+model Bot {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String
+  description String
+  image       String?
+  personality String?
+  isPublic    Boolean   @default(true)
+  accent      String?
+  apiKey      String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  likesCount  Int       @default(0)
+  likes       BotLike[]
+  viewsCount  Int       @default(0)
+
+  // صاحب البوت
+  creatorId String? @db.Uuid
+  creator   User?   @relation("UserBots", fields: [creatorId], references: [id])
+
+  // التصنيف
+  categoryId String?   @db.Uuid
+  category   Category? @relation(fields: [categoryId], references: [id])
+
+  // علاقات أخرى
+  conversations Conversation[] @relation("BotConversations")
+  topEntry      TopBot?        @relation("TopRank")
+}
+
+/**
+ * ───────────────────────────*
+ * 3) CATEGORIES              *
+ * ───────────────────────────
+ */
+model Category {
+  id   String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name String @unique
+  bots Bot[]
+}
+
+/**
+ * ───────────────────────────*
+ * 4) TOP-10 BOTS             *
+ * ───────────────────────────
+ */
+model TopBot {
+  id    Int    @id @default(autoincrement())
+  rank  Int    @unique // 1-10
+  botId String @unique @db.Uuid
+  bot   Bot    @relation("TopRank", fields: [botId], references: [id])
+}
+
+/**
+ * ───────────────────────────*
+ * 5) CONVERSATIONS & MESSAGES*
+ * ───────────────────────────
+ */
+model Conversation {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @db.Uuid
+  botId     String?  @db.Uuid
+  title     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User      @relation(fields: [userId], references: [id])
+  bot      Bot?      @relation("BotConversations", fields: [botId], references: [id])
+  messages Message[]
+}
+
+model Message {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  conversationId String   @db.Uuid
+  sender         String // "user" أو "bot"
+  text           String
+  createdAt      DateTime @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [id])
+}
+
+/**
+ * ───────────────────────────*
+ * 6) ENUMS                   *
+ * ───────────────────────────
+ */
+enum Role {
+  USER
+  ADMIN
+}
+
+model BotLike {
+  userId String @db.Uuid
+  botId  String @db.Uuid
+
+  user User @relation(fields: [userId], references: [id])
+  bot  Bot  @relation(fields: [botId], references: [id])
+
+  @@id([userId, botId]) // يمنع تكرار الإعجاب
+}
