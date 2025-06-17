@@ -29,16 +29,11 @@ export default function HomePage() {
 
   useEffect(() => {
     fetch("/api/bots").then(r => r.json()).then(setBots).catch(console.error);
-    fetch("/api/categories")
-      .then(r => r.json())
-      .then(setCategories)
-      .catch(console.error);
+    fetch("/api/categories").then(r => r.json()).then(setCategories).catch(console.error);
   }, []);
 
   const toggleTheme = () => setDarkMode(m => !m);
-  const displayed = selectedCat
-    ? bots.filter(b => b.category.id === selectedCat)
-    : bots;
+  const displayed = selectedCat ? bots.filter(b => b.category.id === selectedCat) : bots;
 
   return (
     <div
@@ -57,8 +52,8 @@ export default function HomePage() {
       />
       <MobileMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
 
-      {/* رفّعت المحتوى 8 وحدات Tailwind إضافية */}
-      <main className="pt-24 px-4 py-8 md:px-8 md:py-10 space-y-6">
+      {/* رفعت المحتوى تحت الهيدر بمقدار أكبر */}
+      <main className="pt-32 sm:pt-36 lg:pt-40 px-4 py-8 md:px-8 md:py-10 space-y-6">
         <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-2">
           <button
             onClick={() => setSelectedCat("")}
@@ -87,7 +82,7 @@ export default function HomePage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7 }}
         >
-          TOP 10 BOT
+          TOP&nbsp;10&nbsp;BOT
         </motion.h2>
 
         <div className="overflow-x-auto scrollbar-hide">
