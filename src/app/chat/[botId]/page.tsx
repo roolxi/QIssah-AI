@@ -1,11 +1,15 @@
 // src/app/chat/[botId]/page.tsx
 "use client";
-import React, { useState, useEffect, useRef, MouseEvent } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { motion } from "framer-motion";
-import { FaPaperPlane, FaBars, FaEllipsisV, FaShareAlt, FaComment, FaHome, FaPlusCircle, FaRobot, FaHeart, FaStar, FaUser } from "react-icons/fa";
+import Header from "@/app/components/Header";
+import MobileMenu from "@/app/components/MobileMenu";
+import BottomNavBar from "@/app/components/BottomNavBar";
+import DropdownMenu from "@/app/components/DropdownMenu";
+import { FaPaperPlane } from "react-icons/fa";
 
 type Message = { sender: "user" | "bot"; text: string };
 
@@ -85,42 +89,41 @@ export default function ChatBotIdPage() {
   if (!bot)    return <p className="loading">Bot not found.</p>;
 
   return (
-    <div className="container">
-      {/* Sidebar */}
-      <aside className={`sidebar ${menuOpen ? "open" : ""}`}>
-        <div className="menu-section">
-          <div className="home-header">
-            <FaBars className="menu-icon" onClick={toggleMenu} />
-            <div>Qissah.AI</div>
-          </div>
-          <div className="menu-item"><FaHome /> Home</div>
-          <div className="menu-item"><FaComment /> Chats</div>
-          <div className="menu-separator" />
-          <div className="menu-item"><FaPlusCircle /> Create Chatbot</div>
-          <div className="menu-item"><FaRobot /> My Chatbots</div>
-          <div className="menu-item"><FaHeart /> Favorites</div>
-          <div className="menu-item"><FaStar /> Top 10 Bots</div>
-          <div className="menu-separator" />
-        </div>
-        <div className="sign-in">Sign In</div>
-      </aside>
+    <div className="chat-page-root">
+      {/* Header */}
+      <Header
+        darkMode={darkMode}
+        toggleTheme={() => setDarkMode((d) => !d)}
+        onMenuToggle={toggleMenu}
+      />
+
+      {/* Mobile Menu */}
+      <MobileMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
 
       {/* Main chat area */}
-      <main className="main">
-        <header className="topbar">
-          <div className="logo"><span>QISS</span>AH.AI</div>
-          <div className="icons">
-            <div className="icon-btn" title="Share"><FaShareAlt /></div>
-            <FaEllipsisV className="options-icon" />
-            <img className="profile" src={bot.image || "/default-bot-avatar.png"} alt="Bot" />
+      <main className="main-chat-area">
+        {/* Bot info/topbar */}
+        <div className="chat-topbar">
+          <div className="bot-info">
+            <img
+              className="bot-avatar"
+              src={bot.image || "/default-bot-avatar.png"}
+              alt={bot.name}
+            />
+            <div>
+              <div className="bot-name">{bot.name}</div>
+              <div className="bot-desc">{bot.description}</div>
+            </div>
           </div>
-        </header>
+          <DropdownMenu />
+        </div>
 
+        {/* Chat messages */}
         <div className="chat-box" ref={chatRef}>
           {messages.map((msg, i) => (
             <motion.div
               key={i}
-              className="message"
+              className={`message ${msg.sender}`}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
@@ -128,6 +131,7 @@ export default function ChatBotIdPage() {
               <img
                 src={msg.sender === "bot" ? bot.image || "/default-bot-avatar.png" : "/default-user-avatar.png"}
                 alt={msg.sender}
+                className="msg-avatar"
               />
               <div className="text">
                 <div className="name">{msg.sender === "bot" ? bot.name : "YOU"}</div>
@@ -141,6 +145,7 @@ export default function ChatBotIdPage() {
           ))}
         </div>
 
+        {/* Input bar */}
         <div className="input-bar">
           <input
             type="text"
@@ -155,129 +160,147 @@ export default function ChatBotIdPage() {
         </div>
       </main>
 
-      {/* Scoped CSS */}
+      {/* Bottom Navigation Bar */}
+      <BottomNavBar />
+
+      {/* Styles */}
       <style jsx>{`
-        /* container */
-        .container {
-          display: flex;
-          height: 100vh;
+        .chat-page-root {
+          min-height: 100vh;
           background: linear-gradient(to bottom, #5e2ea3, #000);
           color: white;
-          overflow: hidden;
+          padding-top: 70px;
         }
-
-        /* loading */
+        .main-chat-area {
+          max-width: 700px;
+          margin: 0 auto;
+          padding-bottom: 120px;
+          display: flex;
+          flex-direction: column;
+          min-height: 80vh;
+        }
+        .chat-topbar {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 24px 0 10px 0;
+        }
+        .bot-info {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+        }
+        .bot-avatar {
+          width: 56px;
+          height: 56px;
+          border-radius: 16px;
+          object-fit: cover;
+          background: #fff;
+        }
+        .bot-name {
+          font-size: 1.2rem;
+          font-weight: bold;
+        }
+        .bot-desc {
+          font-size: 0.95rem;
+          color: #e0e0e0;
+        }
+        .chat-box {
+          flex: 1;
+          overflow-y: auto;
+          padding: 0 4px;
+          margin-bottom: 90px;
+          display: flex;
+          flex-direction: column;
+          align-items: stretch;
+        }
+        .message {
+          display: flex;
+          align-items: flex-start;
+          background: rgba(255,255,255,0.12);
+          border-radius: 22px;
+          padding: 15px;
+          margin: 18px 0;
+          max-width: 95%;
+          width: fit-content;
+          min-width: 180px;
+          animation: fadeIn 0.3s ease-out;
+        }
+        .message.user {
+          align-self: flex-end;
+          background: linear-gradient(90deg, #a78bfa 60%, #6d28d9 100%);
+        }
+        .message.bot {
+          align-self: flex-start;
+        }
+        .msg-avatar {
+          width: 48px;
+          height: 48px;
+          border-radius: 12px;
+          margin-right: 12px;
+          object-fit: cover;
+          background: #fff;
+        }
+        .text {
+          display: flex;
+          flex-direction: column;
+        }
+        .name {
+          font-weight: bold;
+          font-size: 15px;
+          margin-bottom: 4px;
+        }
+        .content {
+          font-size: 14px;
+          line-height: 1.6;
+          word-break: break-word;
+        }
+        .input-bar {
+          position: fixed;
+          bottom: 30px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 100%;
+          max-width: 600px;
+          display: flex;
+          align-items: center;
+          z-index: 20;
+        }
+        .input-bar input {
+          flex: 1;
+          padding: 18px 25px;
+          border: none;
+          border-radius: 9999px;
+          background: #512d91;
+          font-size: 16px;
+          color: white;
+          outline: none;
+        }
+        .input-bar button {
+          margin-left: 10px;
+          width: 55px;
+          height: 55px;
+          background: #512d91;
+          border: none;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          box-shadow: 0 0 8px rgba(0,0,0,0.3);
+          transition: background 0.3s;
+        }
+        .input-bar button:hover { background: #6b34cc; }
+        .input-bar button :global(svg) { color: white; font-size: 28px; }
         .loading {
           margin: auto;
           font-size: 1.2rem;
         }
         .error { color: #ff6b6b;}
-
-        /* sidebar */
-        .sidebar {
-          width: 180px;
-          background: linear-gradient(to bottom, rgba(255,255,255,0.15), rgba(0,0,0,0.15));
-          padding: 20px 12px;
-          display: flex;
-          flex-direction: column;
-          justify-content: space-between;
-          transition: transform 0.3s ease;
-        }
-        .sidebar.open { transform: translateX(0); }
         @media (max-width: 768px) {
-          .sidebar { transform: translateX(-100%); position: absolute; z-index: 100; }
-        }
-        .menu-section { display: flex; flex-direction: column; gap: 12px; }
-        .home-header { display: flex; align-items: center; font-size:17px; font-weight:bold; margin-bottom:25px; }
-        .menu-icon { font-size:20px; margin-right:8px; cursor: pointer; }
-        .menu-item { display:flex; align-items:center; gap:10px; font-size:13.5px; padding:6px 8px; cursor:pointer; transition: background 0.3s;}
-        .menu-item:hover { background: rgba(255,255,255,0.1); }
-        .menu-separator { height:1px; background:rgba(255,255,255,0.2); margin:10px 0;}
-        .sign-in { background:white; color:#222; font-weight:bold; padding:8px; text-align:center; cursor:pointer; transition: background 0.3s; font-size:13px;}
-        .sign-in:hover { background:#eee; }
-
-        /* main */
-        .main { flex:1; display:flex; flex-direction:column; position:relative; }
-
-        /* topbar */
-        .topbar { display:flex; justify-content:space-between; align-items:center; padding:15px 30px; }
-        .logo { font-size:28px; font-weight:bold; }
-        .logo span { color:#00d2ff; }
-        .icons { display:flex; align-items:center; gap:15px; }
-        .icon-btn { background:rgba(255,255,255,0.1); border-radius:50%; padding:8px; cursor:pointer; transition: background 0.3s; }
-        .icon-btn:hover { background:rgba(255,255,255,0.3); }
-        .options-icon { font-size:24px; cursor:pointer; }
-        .profile { width:35px; height:35px; border-radius:50%; object-fit:cover; }
-
-        /* chat box */
-        .chat-box {
-          flex:1;
-          padding:0 20px;
-          overflow-y:auto;
-          margin-bottom:100px;
-          display:flex;
-          flex-direction:column;
-          align-items:center;
-        }
-
-        .message {
-          display:flex;
-          align-items:center;
-          background:rgba(255,255,255,0.15);
-          border-radius:25px;
-          padding:15px;
-          margin:20px 0;
-          max-width:600px;
-          width:100%;
-          animation: fadeIn 0.3s ease-out;
-        }
-        @keyframes fadeIn { from { opacity:0; transform:translateY(10px);} to { opacity:1; transform:translateY(0);} }
-
-        .message img {
-          width:60px; height:60px; border-radius:15px; margin-right:15px; object-fit:cover;
-        }
-        .text { display:flex; flex-direction:column; }
-        .name { font-weight:bold; font-size:16px; margin-bottom:5px; }
-        .content { font-size:14px; line-height:1.6; }
-
-        /* input bar */
-        .input-bar {
-          position:absolute;
-          bottom:30px;
-          left:50%;
-          transform:translateX(-50%);
-          width:100%; max-width:600px;
-          display:flex; align-items:center;
-        }
-        .input-bar input {
-          flex:1;
-          padding:18px 25px;
-          border:none;
-          border-radius:9999px;
-          background:#512d91;
-          font-size:16px;
-          color:white;
-          outline:none;
-        }
-        .input-bar button {
-          margin-left:10px;
-          width:55px; height:55px;
-          background:#512d91;
-          border:none;
-          border-radius:50%;
-          display:flex; align-items:center; justify-content:center;
-          cursor:pointer;
-          box-shadow:0 0 8px rgba(0,0,0,0.3);
-          transition:background 0.3s;
-        }
-        .input-bar button:hover { background:#6b34cc; }
-        .input-bar button :global(svg) { color:white; font-size:28px; }
-
-        /* responsive */
-        @media (max-width: 768px) {
-          .sidebar { display: none; }
-          .message { max-width:90%; }
-          .chat-box { padding:0 10px; }
+          .main-chat-area { padding-bottom: 140px; }
+          .chat-topbar { flex-direction: column; align-items: flex-start; gap: 10px; }
+          .chat-box { margin-bottom: 120px; }
         }
       `}</style>
     </div>
