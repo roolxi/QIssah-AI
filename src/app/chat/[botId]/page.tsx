@@ -209,37 +209,46 @@ export default function ChatBotIdPage() {
           flex: 1;
           overflow-y: auto;
           padding: 0 4px;
-          margin-bottom: 90px;
+          margin-bottom: 90px; /* Ensure space for input bar */
           display: flex;
           flex-direction: column;
-          align-items: stretch;
+          /* align-items: stretch; */ /* align-self will handle individual items */
         }
         .message {
           display: flex;
           align-items: flex-start;
-          background: rgba(255,255,255,0.12);
-          border-radius: 22px;
-          padding: 15px;
-          margin: 18px 0;
-          max-width: 95%;
-          width: fit-content;
-          min-width: 180px;
+          border-radius: 18px; /* Adjusted for a slightly boxier feel */
+          padding: 12px 18px; /* Adjusted padding */
+          margin: 12px 0; /* Reduced vertical margin */
+          max-width: 75%;    /* Constrain width more */
+          width: fit-content; /* Critical for small boxes */
+          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Added shadow */
           animation: fadeIn 0.3s ease-out;
+          /* min-width: 180px; */ /* Removed to allow truly small messages */
         }
         .message.user {
-          align-self: flex-end;
-          background: linear-gradient(90deg, #a78bfa 60%, #6d28d9 100%);
+          align-self: flex-end; /* Ensures message box is on the right */
+          background: linear-gradient(135deg, #8B5CF6, #6D28D9); /* Vibrant purple gradient */
+          color: white;
+          flex-direction: row-reverse; /* Avatar on the right of text */
         }
         .message.bot {
-          align-self: flex-start;
+          align-self: flex-start; /* Ensures message box is on the left */
+          background: #37304F; /* Darker, solid complementary color */
+          color: white;
         }
         .msg-avatar {
           width: 48px;
           height: 48px;
           border-radius: 12px;
-          margin-right: 12px;
+          margin-right: 12px; /* Default for bot */
           object-fit: cover;
-          background: #fff;
+          background: #fff; /* Placeholder background for avatar image */
+          flex-shrink: 0; /* Prevent avatar from shrinking */
+        }
+        .message.user .msg-avatar {
+          margin-right: 0;
+          margin-left: 12px; /* Avatar margin for user messages */
         }
         .text {
           display: flex;
@@ -298,9 +307,16 @@ export default function ChatBotIdPage() {
         }
         .error { color: #ff6b6b;}
         @media (max-width: 768px) {
-          .main-chat-area { padding-bottom: 140px; }
+          .main-chat-area { 
+            padding-left: 10px; /* Add some padding for smaller screens */
+            padding-right: 10px; /* Add some padding for smaller screens */
+            padding-bottom: 140px; 
+          }
           .chat-topbar { flex-direction: column; align-items: flex-start; gap: 10px; }
           .chat-box { margin-bottom: 120px; }
+          .message {
+            max-width: 85%; /* Allow slightly wider messages on mobile */
+          }
         }
       `}</style>
     </div>
